@@ -1,0 +1,27 @@
+comments:
+- ''
+credit:
+  give_credit: false
+custom_tags: []
+deleting:
+  delete_interval_minutes: 9000
+description:
+  use_original: true
+hashtags:
+  hashtags_list: '@bigclappin @big.clappin.memes, @bigclappinmemes'
+  use_hashtags: true
+instagram:
+  password: gAAAAABmmw08aow7ke8KKikUre77oo2CWINgDpUaN6u9dx-SpHmS7Lv3trI5_RV5qnpo19DisCrxwgDugoKpdeTn6fcT2vpSRA==
+  username: gAAAAABmmw088t3oSuUhGZWGQzTtStgibPRZ6vz-EdzQ2duBRq7J0gdIJqlZ6Jr-nmPTO9AnL2RAn8WhMhP75hMfVblAzkW-GA==
+key: Kz5m54rwgFzz0AZ6IQQ5H9LGU0lV3Ebxb9L9N1feh0A=
+leave_comment: true
+scraping:
+  enabled: false
+  like_reels: false
+  num_reels: 10
+  profiles: boof_wizard
+  scrape_interval_minutes: 600
+uploading:
+  add_to_story: false
+  enabled: true
+  upload_interval_minutes: 38
