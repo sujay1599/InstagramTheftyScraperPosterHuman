@@ -2,7 +2,7 @@
 
 # InstagramTheftyScraperPosterHuman
 
-## See Changes Here: [Enhanced Breakdown of Changes in InstagramTheftyScraperPosterHuman](https://github.com/sujay1599/InstagramTheftyScraperPosterHuman/wiki/Enhanced-Breakdown-of-Changes)
+## See Changes Here: [Enhanced Breakdown of Changes in InstagramTheftyScraperPosterHuman VS InstagramTheftyPosterV3.2 ](https://github.com/sujay1599/InstagramTheftyScraperPosterHuman/wiki/Enhanced-Breakdown-of-Changes)
 
 InstagramTheftyScraperPosterHuman is an advanced tool for automating the process of scraping, uploading, and managing Instagram reels. This tool builds upon previous versions, introducing several enhancements and new functionalities to improve automation, human-like interactions, and bot detection prevention.
 
