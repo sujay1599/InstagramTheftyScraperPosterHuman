@@ -1,0 +1,5 @@
+instagrapi
+cryptography
+pyyaml
+rich
+moviepy

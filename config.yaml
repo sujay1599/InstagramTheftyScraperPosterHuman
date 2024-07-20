@@ -1,0 +1,77 @@
+credit:
+  give_credit: false
+custom_tags:
+- instagram
+- instadaily
+- LikeForFollow
+- LikesForLikes
+- LikeForLikes
+- FollowForFollow
+- LikeForLike
+- FollowForFollowBack
+- FollowBack
+- FollowMe
+- instalike
+- comment
+- follow
+- memes
+- funnymemes
+- memestagram
+- dankmemes
+- memelord
+- instamemes
+- instagood
+- love
+- photooftheday
+- picoftheday
+- likeforlikes
+- likes
+- followme
+- photography
+- beautiful
+- fashion
+- smile
+- me
+- followforfollowback
+- l
+- likeforfollow
+- myself
+- likeforlike
+- bhfyp
+- f
+- followback
+- followers
+- followforfollow
+- style
+- photo
+- happy
+- instamood
+- nature
+- trending
+- art
+- india
+- viral
+- explore
+- model
+- travel
+deleting:
+  delete_interval_minutes: 900
+description:
+  use_original: true
+hashtags:
+  use_hashtags: false
+instagram:
+  password: 
+  username: 
+key: 
+leave_comment: false
+scraping:
+  enabled: false
+  like_reels: false
+  num_reels: 5
+  profiles: acc1, acc2, ac.c3 etc
+  scrape_interval_minutes: 600
+uploading:
+  add_to_story: false
+  enabled: true
+  upload_interval_minutes: 45
