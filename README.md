@@ -26,7 +26,12 @@ InstagramTheftyScraperPosterHuman is an advanced tool for automating the process
 - **Improved Error Handling**: Enhanced error handling and logging to capture JSONDecodeError and other exceptions, making the script more robust.
 - **Improved Dashboard**: Updated dashboard to display detailed information about scraping, uploading, and random wait times, as well as the next file to be uploaded.
 - **Human-like Interactions**: Performs random human-like actions during waiting periods, including liking and commenting on random posts from popular hashtags.
-- **![image](https://github.com/user-attachments/assets/584f44fe-5ad4-47f7-86ae-8ff935e1537f)
+  - ![image](https://github.com/user-attachments/assets/2ee2771e-ff19-4dc7-b1de-e9c8631aa62a)
+  - ![image](https://github.com/user-attachments/assets/584f44fe-5ad4-47f7-86ae-8ff935e1537f)
+- **Auto Restart Scraping**: Automatically initiates the scraping process when there are no more videos left to upload in the downloads directory.
+  - ![image](https://github.com/user-attachments/assets/adb695c4-ec50-4b9a-8024-4457f4dad4a6)
+  - ![image](https://github.com/user-attachments/assets/2debc563-7d87-4942-99a8-35fddbc848b0)
+
 
 
 ## Requirements
@@ -213,6 +218,7 @@ Run the dashboard script to view detailed information about scraping, uploading 
 ```bash
 python dashboard.py
 ```
+![image](https://github.com/user-attachments/assets/7a75cf66-e046-46df-bdb8-d8d65316fa19)
 
 ### Additional Information
 
