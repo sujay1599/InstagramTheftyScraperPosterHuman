@@ -213,4 +213,21 @@ Common issues and their solutions:
 2. **Feedback Required**: Instagram may require additional verification. Log in to your Instagram account manually and check for any prompts.
 3. **File Not Found**: Ensure the `downloads` directory exists and has the necessary permissions.
 
+Sure, here is the final portion of the README:
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
+
+## Disclaimer
+
+This script is intended for educational and personal use only. Use it responsibly and ensure you comply with Instagram’s terms of service and guidelines.
+
+## End
 By following the configuration details and usage instructions, you can efficiently manage your Instagram scraping and uploading tasks using this program.
