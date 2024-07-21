@@ -196,6 +196,9 @@ Handles Instagram authentication and session management:
 2. **Login Management**:
    - Manages login sessions, checking for an active session first and creating a new one if necessary.
    - Uses `instagrapi` to handle the authentication process.
+  
+   - S![image](https://github.com/user-attachments/assets/4ddc09a9-df1b-4f01-8204-ef1e5e5d3885)
+
 
 #### config_setup.py
 
@@ -244,16 +247,21 @@ The main script that orchestrates the scraping, uploading, and human-like action
 
 3. **Scraping Logic**:
    - Calls `scrape.py` to handle the scraping of Instagram reels.
-   - Performs human-like actions using the `perform_human_actions` function, including
-
- liking and commenting on posts to reduce bot detection.
+   - Performs human-like actions using the `perform_human_actions` function, including Sliking and commenting on posts to reduce bot detection.
+        - ![image](https://github.com/user-attachments/assets/a0e8585c-cc07-4170-a2f5-426aeffaf3b2)
 
 4. **Uploading Logic**:
    - Handles the uploading of scraped reels, including adding descriptions, hashtags, and crediting the original posters. This logic is found in `upload.py`.
+      -    ![image](https://github.com/user-attachments/assets/ed0752bf-f8e5-4401-a0ec-9663014a8b86)
+      -    ![image](https://github.com/user-attachments/assets/052cd0df-c7bc-4544-a418-a18d4aba4f4a)
+
+
 
 5. **Logging and Random Waits**:
    - Implements random waits between actions to mimic human behavior and avoid detection.
    - Logs all activities for traceability and debugging purposes.
+      - ![image](https://github.com/user-attachments/assets/2bb3f567-b676-41d6-b094-b3f02085f8f5)
+      - ![image](https://github.com/user-attachments/assets/5ae6d148-1764-418b-bac1-2c3fd6d84f60)
 
 #### scrape.py
 
@@ -297,7 +305,7 @@ Contains utility functions for logging, status management, random sleeps, and ma
 ### Anti-Bot Detection
 
 The program includes several features to avoid detection by Instagram:
-
+   ![image](https://github.com/user-attachments/assets/50fc5988-8f71-4fbe-a39b-6efb40df31f2)
 - **Random Waits**: Implements random waits between actions to mimic human behavior.
 - **Human-like Actions**: Performs random actions like liking, commenting, and following during the waiting periods.
 - **Detailed Logging**: Logs all activities for better traceability and debugging.
@@ -318,6 +326,7 @@ Run the dashboard script to view detailed information about scraping, uploading 
 ```bash
 python dashboard.py
 ```
+![image](https://github.com/user-attachments/assets/12d495a7-8115-4e3d-8a86-a635b8a79682)
 
 ### License
 
