@@ -1,4 +1,4 @@
-# InstagramTheftyScraperPosterHumanV2
+# InstagramTheftyScraperPosterHumanV2.1
 
 ## See Changes Here: [Enhanced Breakdown of Changes in InstagramTheftyScraperPosterHuman V2 vs InstagramTheftyScraperPosterHuman V1 ](https://github.com/sujay1599/InstagramTheftyScraperPosterHuman/wiki/Enhanced-Breakdown-of-Changes-%E2%80%90-Appended)
 
