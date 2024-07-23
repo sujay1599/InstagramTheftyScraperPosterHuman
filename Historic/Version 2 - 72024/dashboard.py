@@ -58,6 +58,15 @@ def format_time(timestamp):
     except (ValueError, TypeError):
         return "Invalid timestamp"
 
+def extract_reel_id(reel_info):
+    try:
+        parts = reel_info.split(" ")
+        reel_id = parts[0].split("=")[1]
+        return reel_id
+    except Exception as e:
+        console.print(f"[bold red]Error extracting reel_id: {e}[/bold red]")
+        return reel_info
+
 def display_dashboard():
     status = read_json_file(status_file)
     if not status:
@@ -99,7 +108,8 @@ def display_dashboard():
 
     console.print("[bold]Reels Scraped[/bold]")
     for reel in status.get('reels_scraped', []):
-        console.print(f"- {reel}")
+        reel_id = extract_reel_id(reel)
+        console.print(f"- {reel_id}")
 
     console.print("[bold]Random Upload Times[/bold]")
     for item in random_upload_times[-10:]:

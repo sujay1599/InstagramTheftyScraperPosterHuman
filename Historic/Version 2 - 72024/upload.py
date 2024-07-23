@@ -12,9 +12,7 @@ from rich.console import Console
 console = Console()
 
 DEFAULT_DESCRIPTIONS = [
-""" -FOLLOW ME FOR EPIC MEMES AND LOLZ -
-    @bigclappin @bigclappinmemes @big.clap.memes 
-The Tesla Cybertruck is an all-electric, battery-powered light-duty truck unveiled by Tesla, Inc.
+    """The Tesla Cybertruck is an all-electric, battery-powered light-duty truck unveiled by Tesla, Inc.
 
 Here is a comprehensive overview of its key features and specifications:
 Tesla Cybertruck Overview
@@ -40,10 +38,7 @@ Performance and Variants
 ◦ Range: ~500 miles
 ◦ Towing Capacity: 14,000 pounds
 """,
-    """
-    -FOLLOW ME FOR EPIC MEMES AND LOLZ -
-    @bigclappin @bigclappinmemes @big.clap.memes 
-Here is a simple and delicious chocolate chip cookie recipe for you:
+    """Here is a simple and delicious chocolate chip cookie recipe for you:
 
 Ingredients:
 - 1 cup (2 sticks) unsalted butter, softened
@@ -68,10 +63,7 @@ Instructions:
 
 Enjoy your delicious homemade chocolate chip cookies!
 """,
-    """
-    -FOLLOW ME FOR EPIC MEMES AND LOLZ -
-    @bigclappin @bigclappinmemes @big.clap.memes
-Tomato Basil Soup
+    """Tomato Basil Soup
 
 Ingredients:
 - 2 tbsp olive oil
@@ -95,11 +87,7 @@ Instructions:
 7. Stir in the chopped basil leaves and simmer for another 5 minutes.
 8. Serve hot, garnished with grated Parmesan cheese if desired. Enjoy with crusty bread or a grilled cheese sandwich.
 """,
-    """    
-    -FOLLOW ME FOR EPIC MEMES AND LOLZ -
-    @bigclappin @bigclappinmemes @big.clap.memes 
-
-Absolutely! Here is the scoop regarding the Hellcat SRT:
+"""Absolutely! Here is the scoop regarding the Hellcat SRT:
 
 The Hellcat ST is an exceptional racing beast renowned for its unparalleled performance and aggressive styling. Fueled by a mighty 6.2-liter supercharged V8 engine, it churns out well over 700 horsepower.
 Zooming from 0 to 100 km/h in just 3.5 seconds, it boasts a mind-blowing top speed exceeding 330 km/h.
@@ -107,10 +95,7 @@ With state-of-the-art aerodynamics and advanced stability systems, the Hellcat S
 Initially valued at around $1.8 million, the Hellcat ST stands as a pinnacle of exclusivity and luxury in the racing world. ⚙️
 Limited to only three units in production, its rarity elevates its desirability, attracting racing aficionados and collectors worldwide.
 """ ,
-    """
-    -FOLLOW ME FOR EPIC MEMES AND LOLZ -
-    @bigclappin @bigclappinmemes @big.clap.memes 
-The Bugatti Veyron is a legendary supercar known for its exceptional performance and striking design.
+"""The Bugatti Veyron is a legendary supercar known for its exceptional performance and striking design.
 
 It was first introduced in 2005 and quickly gained recognition as one of the most powerful and fastest cars in the world.🥇 
 The Veyron is powered by an astonishing 8.0-liter, quad-turbocharged W16 engine, delivering an incredible amount of horsepower and torque.
@@ -150,7 +135,6 @@ def upload_reels_with_new_descriptions(client, config, unuploaded_reels, uploade
     if not unuploaded_reels:
         console.print("[bold bright_red]No new reels to upload[/bold bright_red]")
         return
-    
     for reel_file in unuploaded_reels:
         reel_id = reel_file.split('_')[1].split('.')[0]
         profile_username = reel_file.split('_')[0]
@@ -187,19 +171,21 @@ def upload_reels_with_new_descriptions(client, config, unuploaded_reels, uploade
             console.print(f"[bold bright_red]Failed to upload reel {reel_id}: {e}[/bold bright_red]")
             continue
 
+        # Call the dashboard display function after each upload
         console.print("[bold bright_green]Displaying dashboard after reel upload[/bold bright_green]")
         subprocess.run(["python", "dashboard.py"])
 
         if config['uploading']['add_to_story']:
             try:
                 console.print(f"[bold bright_green]Preparing to upload reel {reel_id} to story[/bold bright_green]")
-                story_wait_time = random_sleep(60, 180, action="story upload", profile_reel_id=f"{profile_username}_{reel_id}")
+                story_wait_time = random_sleep(60, 180, action="story upload", profile_reel_id=f"{profile_username}_{reel_id}")  # Increased wait time before uploading to story
                 console.print(f"[bold blue3]Waited for {story_wait_time:.2f} seconds before uploading reel {reel_id} to story[/bold blue3]")
                 client.video_upload_to_story(media_path, new_description)
                 console.print(f"[bold bright_green]Added reel: {profile_username}_{reel_id} to story[/bold bright_green]")
             except Exception as e:
                 console.print(f"[bold bright_red]Failed to add reel {reel_id} to story: {e}[/bold bright_red]")
 
+            # Call the dashboard display function after each story upload
             console.print("[bold blue3]Displaying dashboard after story upload[/bold blue3]")
             subprocess.run(["python", "dashboard.py"])
 
@@ -223,7 +209,7 @@ def upload_reels_with_new_descriptions(client, config, unuploaded_reels, uploade
         update_status(
             last_upload_time=datetime.now().timestamp(),
             next_upload_time=(datetime.now() + timedelta(minutes=config['uploading']['upload_interval_minutes'])).timestamp(),
-            reels_uploaded=status['reels_uploaded']
+            reels_uploaded=status['reels_uploaded']  # Track uploaded reels
         )
 
         if config['uploading']['add_to_story']:
@@ -247,7 +233,7 @@ def upload_reels_with_new_descriptions(client, config, unuploaded_reels, uploade
 
         while elapsed_time < total_wait_time:
             remaining_time = total_wait_time - elapsed_time
-            interval = min(remaining_time, random.uniform(90, 545))
+            interval = min(remaining_time, random.uniform(90, 545))  # Pause every 1.5 to 9 minutes
             sleep_with_progress_bar(interval)
             elapsed_time += interval
 
@@ -259,9 +245,11 @@ def upload_reels_with_new_descriptions(client, config, unuploaded_reels, uploade
                 elapsed_minutes = elapsed_time // 60
                 console.print(f"[bold yellow]Waiting for {config['uploading']['upload_interval_minutes'] - elapsed_minutes} minutes before next upload[/bold yellow]")
             else:
+            # Print the waiting time after each interval if human-like actions did not occur
                 elapsed_minutes = elapsed_time // 60
                 console.print(f"[bold blue3]Waiting for {config['uploading']['upload_interval_minutes'] - elapsed_minutes} minutes before next upload[/bold blue3]")
                 console.print(f"[bold blue3]Next upload at {(datetime.now() + timedelta(seconds=total_wait_time - elapsed_time)).strftime('%Y-%m-%d %H:%M:%S')}[/bold blue3]")
+
 
 def get_unuploaded_reels(downloads_dir, scraped_reels, uploaded_reels):
     unuploaded_reels = []
@@ -273,4 +261,3 @@ def get_unuploaded_reels(downloads_dir, scraped_reels, uploaded_reels):
                 unuploaded_reels.append(filename)
     console.print(f"[bold bright_green]Found {len(unuploaded_reels)} unuploaded reels[/bold bright_green]")
     return unuploaded_reels
-
