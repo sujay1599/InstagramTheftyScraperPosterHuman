@@ -4,6 +4,43 @@
 
 InstagramTheftyScraperPosterHuman is an advanced tool for automating the process of scraping, uploading, and managing Instagram reels. This tool builds upon previous versions, introducing several enhancements and new functionalities to improve automation, human-like interactions, and bot detection prevention.
 
+### Key Differences and Enhancements
+
+**auth.py:**
+1. **Logging Enhancements**: Uses `rich.console.Console` for more detailed logging.
+2. **Session Handling**: Improved session management with `save_session`, `load_session`, and `update_session_file` functions.
+3. **Time Zone Setting**: Sets CST (Chicago) time zone during login.
+4. **Enhanced Re-login**: Adds `relogin` function for better session handling.
+5. **Modular Code**: More modular with separate functions for session handling.
+
+**main.py:**
+1. **Configuration Validation**: Ensures required keys in the `scraping` section.
+2. **Session Management**: Improved with `perform_login`, `update_session_file`, and `relogin` functions.
+3. **Rate Limit Handling**: Adds `handle_rate_limit` function with retries and exponential backoff.
+4. **Delay Range**: Sets a delay range for human-like behavior.
+5. **Proxy Support**: Adds support for proxies.
+6. **Error Handling**: More robust error handling with detailed logging.
+
+**utils.py:**
+1. **Enhanced Logging**: Improved logging messages for better clarity.
+2. **Session Management**: Ensures better handling of session files.
+3. **Functionality Additions**: Minor updates to align with other enhanced functionalities.
+
+**scrape.py:**
+1. **Human-Like Actions**: Randomly selects actions from a list of lambda functions.
+2. **Media Handling**: Simplifies the process by performing actions directly on media.
+3. **Logging Enhancements**: Improved logging messages.
+4. **Scraping Logic**: Uses `profile_reel_id` for uniqueness.
+5. **Error Handling**: More detailed logging for exceptions.
+
+**upload.py:**
+1. **Default Descriptions**: Adds branding messages for social media accounts.
+2. **Human-Like Actions**: More seamlessly integrated with improved logging.
+3. **Description Building**: Enhanced with additional branding messages.
+4. **Dashboard Display**: Displays the dashboard after each upload.
+5. **Resource Management**: Improved logging for resource management.
+6. **Loop Logic**: Maintains the waiting period logic with random sleep intervals.
+
 ## Features
 
 ### Core Features
