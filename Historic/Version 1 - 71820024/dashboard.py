@@ -4,12 +4,6 @@ from rich.console import Console
 from rich.table import Table
 from datetime import datetime
 
-print("="*80)
-print("Created by: Sujay1599")
-print("Program: InstgramTheftyScraperPosterHuman")
-print("Working as of: 7/20/2024")
-print("="*80)
-
 status_file = 'status.json'
 log_file = 'upload_log.txt'
 random_upload_time_file = 'random-upload-times.json'
@@ -76,6 +70,12 @@ def display_dashboard():
     random_upload_times = read_json_file(random_upload_time_file)
     random_waits = read_json_file(random_waits_file)
     total_files, uploaded_files, unuploaded_files, folder_size = get_file_counts()
+    
+    console.print("="*80)
+    console.print("Created by: Sujay1599")
+    console.print("Program: InstgramTheftyScraperPosterHuman")
+    console.print("Working as of: 7/20/2024")
+    console.print("="*80)
 
     console.print("=" * 80, justify="left")
     console.print("[bold yellow]Instagram Thefty Poster Dashboard[/bold yellow]", justify="left")

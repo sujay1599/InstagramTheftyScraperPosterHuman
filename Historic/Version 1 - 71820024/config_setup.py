@@ -1,3 +1,9 @@
+print("="*80)
+print("Created by: Sujay1599")
+print("Program: InstgramTheftyScraperPosterHuman")
+print("Working as of: 7/20/2024")
+print("="*80)
+
 import yaml
 from cryptography.fernet import Fernet
 import getpass
@@ -67,9 +73,7 @@ def create_config(encrypted_username, encrypted_password, key):
             'give_credit': get_boolean_input('Give credit? (true/false): ')
         }
     else:
-        custom_description = input('Enter custom description (leave blank to use default descriptions): ')
-        config['description']['custom_description'] = custom_description
-
+        config['description']['custom_description'] = input('Enter custom description: ')
         config['hashtags'] = {
             'use_hashtags': get_boolean_input('Add hashtags? (true/false): ')
         }
@@ -115,7 +119,7 @@ def main():
     config = create_config(encrypted_username, encrypted_password, key)
     save_config(config)
 
-    delete_files(['status.json', 'last_scraped_timestamp.txt', 'random-upload-times.json', 'random-waits.json'])
+    delete_files(['status.json', 'last_scraped_timestamp.txt', 'random-upload-times.json'])
 
 if __name__ == "__main__":
     main()
