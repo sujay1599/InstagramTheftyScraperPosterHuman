@@ -1,6 +1,12 @@
-# InstagramTheftyScraperPosterHumanV2.1
+### Updated README for InstagramTheftyScraperPosterHuman V2.2
 
-## See Changes Here: [Enhanced Breakdown of Changes in InstagramTheftyScraperPosterHuman V2.1 vs InstagramTheftyScraperPosterHuman V2 ](https://github.com/sujay1599/InstagramTheftyScraperPosterHuman/wiki/Changes-V2-to-V2.1)
+# InstagramTheftyScraperPosterHumanV2.2
+## 7/28/2024
+
+### CHANGE LOG:  
+## V2.2: [Enhanced Breakdown of Changes in InstagramTheftyScraperPosterHuman V2.2 vs InstagramTheftyScraperPosterHuman V2.1](https://github.com/sujay1599/InstagramTheftyScraperPosterHuman/wiki/Changes-V2.1-to-V2.2)
+## V2.1: https://github.com/sujay1599/InstagramTheftyScraperPosterHuman/wiki/Changes-V2-to-V2.1
+## V2: https://github.com/sujay1599/InstagramTheftyScraperPosterHuman/wiki/Enhanced-Breakdown-of-Changes-%E2%80%90-Appended#enhanced-breakdown-of-changes-in-instagramtheftyscraperposterhumanv2-vs-instagramtheftyscraperposterhumanv1 
 
 InstagramTheftyScraperPosterHuman is an advanced tool for automating the process of scraping, uploading, and managing Instagram reels. This tool builds upon previous versions, introducing several enhancements and new functionalities to improve automation, human-like interactions, and bot detection prevention.
 
@@ -12,6 +18,7 @@ InstagramTheftyScraperPosterHuman is an advanced tool for automating the process
 3. **Time Zone Setting**: Sets CST (Chicago) time zone during login.
 4. **Enhanced Re-login**: Adds `relogin` function for better session handling.
 5. **Modular Code**: More modular with separate functions for session handling.
+6. **Session Injection**: Utilizes `inject_sessionid_to_public` to ensure public session usage.
 
 **main.py:**
 1. **Configuration Validation**: Ensures required keys in the `scraping` section.
@@ -53,7 +60,7 @@ InstagramTheftyScraperPosterHuman is an advanced tool for automating the process
 - **Logging**: Logs all activities for better traceability and debugging.
 - **Configurable Settings**: Uses a YAML configuration file for easy customization.
 
-### New Features in InstagramTheftyScraperPosterHuman
+### New Features in InstagramTheftyScraperPosterHuman V3.0
 
 - **Enhanced Random Waits**: Added random waits between scraping, liking, commenting, and uploading actions to better simulate human behavior and reduce the risk of detection by Instagram.
 - **Logging of Random Waits**: Logged random wait times into a separate file (`random-waits.json`) for better tracking and debugging.
@@ -93,7 +100,7 @@ pip install -r requirements.txt
    ```bash
    python config_setup.py
    ```
-   Follow the prompts to enter your configuration details. This will generate a `config.yaml` file with the necessary settings, including encrypted Instagram credentials.
+   Follow the prompts to enter your configuration details. This will generate a `config.yaml` file with the necessary settings, including encrypted Instagram credentials and optional proxy settings.
 
 ### Configuration
 
@@ -182,6 +189,7 @@ custom_tags:
   - explore
   - model
   - travel
+proxy: http://proxyserver:port # Add your proxy address here if you use one
 ```
 
 ### Configuration Details
@@ -210,6 +218,7 @@ custom_tags:
   - `leave_comment`: Set to `true` to leave comments on scraped videos.
   - `comments`: List of comments to leave if `leave_comment` is `true`.
 - **Custom Tags**: List of custom tags for human-like actions.
+- **Proxy**: Optional proxy settings.
 
 ## Usage
 
@@ -221,7 +230,9 @@ python main.py
 
 This will start the process of scraping, uploading, and performing human-like actions as configured in the `config.yaml` file.
 
-### Detailed Breakdown of Files
+### Detailed Breakdown of
+
+ Files
 
 #### auth.py
 
@@ -233,9 +244,7 @@ Handles Instagram authentication and session management:
 2. **Login Management**:
    - Manages login sessions, checking for an active session first and creating a new one if necessary.
    - Uses `instagrapi` to handle the authentication process.
-  
-   - S![image](https://github.com/user-attachments/assets/4ddc09a9-df1b-4f01-8204-ef1e5e5d3885)
-
+   - Injects session IDs to the public session to maintain consistency.
 
 #### config_setup.py
 
@@ -249,6 +258,7 @@ Generates the `config.yaml` configuration file with encrypted credentials. Also 
    
 3. **Getting User Inputs**:
    - Prompts the user for various configuration details such as profiles to scrape, number of reels, and intervals.
+   - Includes prompts for proxy settings.
    
 4. **Creating and Saving Configuration**:
    - Creates a YAML configuration file with all the provided details and encrypted credentials.
@@ -284,21 +294,14 @@ The main script that orchestrates the scraping, uploading, and human-like action
 
 3. **Scraping Logic**:
    - Calls `scrape.py` to handle the scraping of Instagram reels.
-   - Performs human-like actions using the `perform_human_actions` function, including Sliking and commenting on posts to reduce bot detection.
-        - ![image](https://github.com/user-attachments/assets/a0e8585c-cc07-4170-a2f5-426aeffaf3b2)
+   - Performs human-like actions using the `perform_human_actions` function, including liking and commenting on posts to reduce bot detection.
 
 4. **Uploading Logic**:
    - Handles the uploading of scraped reels, including adding descriptions, hashtags, and crediting the original posters. This logic is found in `upload.py`.
-      -    ![image](https://github.com/user-attachments/assets/ed0752bf-f8e5-4401-a0ec-9663014a8b86)
-      -    ![image](https://github.com/user-attachments/assets/052cd0df-c7bc-4544-a418-a18d4aba4f4a)
-
-
 
 5. **Logging and Random Waits**:
    - Implements random waits between actions to mimic human behavior and avoid detection.
    - Logs all activities for traceability and debugging purposes.
-      - ![image](https://github.com/user-attachments/assets/2bb3f567-b676-41d6-b094-b3f02085f8f5)
-      - ![image](https://github.com/user-attachments/assets/5ae6d148-1764-418b-bac1-2c3fd6d84f60)
 
 #### scrape.py
 
@@ -342,7 +345,6 @@ Contains utility functions for logging, status management, random sleeps, and ma
 ### Anti-Bot Detection
 
 The program includes several features to avoid detection by Instagram:
-   ![image](https://github.com/user-attachments/assets/50fc5988-8f71-4fbe-a39b-6efb40df31f2)
 - **Random Waits**: Implements random waits between actions to mimic human behavior.
 - **Human-like Actions**: Performs random actions like liking, commenting, and following during the waiting periods.
 - **Detailed Logging**: Logs all activities for better traceability and debugging.
@@ -363,7 +365,6 @@ Run the dashboard script to view detailed information about scraping, uploading 
 ```bash
 python dashboard.py
 ```
-![image](https://github.com/user-attachments/assets/12d495a7-8115-4e3d-8a86-a635b8a79682)
 
 ### License
 
