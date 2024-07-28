@@ -273,3 +273,4 @@ def get_unuploaded_reels(downloads_dir, scraped_reels, uploaded_reels):
                 unuploaded_reels.append(filename)
     console.print(f"[bold bright_green]Found {len(unuploaded_reels)} unuploaded reels[/bold bright_green]")
     return unuploaded_reels
+

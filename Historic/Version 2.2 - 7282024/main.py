@@ -1,18 +1,17 @@
 print("="*80)
 print("Created by: Sujay1599")
 print("Program: InstgramTheftyScraperPosterHuman")
-print("Version:2.2")
-print("Working as of: 7/28/2024")
+print("Working as of: 7/20/2024")
 print("="*80)
 
 import logging
 import os
 import random
-import time  # Import time module
-from time import sleep as time_sleep  # Ensure sleep function is imported correctly
+import time
+from time import time, sleep
 from tqdm import tqdm
 from config_setup import load_config
-from auth import perform_login, update_session_file, decrypt_credentials, relogin  # Import required functions
+from auth import login, decrypt_credentials, update_session_file, relogin
 from instagrapi import Client
 from scrape import scrape_reels, perform_human_actions
 from upload import upload_reels_with_new_descriptions, get_unuploaded_reels, load_uploaded_reels
@@ -67,10 +66,30 @@ proxy = config.get('proxy')
 if proxy:
     cl.set_proxy(proxy)
 
+# Function to perform login with retries
+def perform_login(client, username, password, session_file):
+    try:
+        login(client, username, password, session_file)
+    except Exception as e:
+        console.print(f"[bold red]Login failed: {e}. Retrying after waiting.[/bold red]")
+        sleep(300)  # Sleep for 5 minutes before retrying
+        relogin(client, username, password, session_file)
+
 # Perform initial login
 perform_login(cl, INSTAGRAM_USERNAME, INSTAGRAM_PASSWORD, 'session.json')
 update_session_file(cl, 'session.json')
 logging.info("Logged in to Instagram")
+
+# Ensure UUIDs and timezone offset are reused if available
+if os.path.exists('session.json'):
+    old_session = cl.get_settings()
+    if "uuids" in old_session:
+        cl.set_uuids(old_session["uuids"])
+    if "timezone_offset" in old_session:
+        cl.set_timezone_offset(old_session["timezone_offset"])
+else:
+    # Set timezone offset to CST (Chicago) if session is not available
+    cl.set_timezone_offset(-21600)
 
 def handle_rate_limit(client, func, *args, **kwargs):
     retries = 5
@@ -79,9 +98,9 @@ def handle_rate_limit(client, func, *args, **kwargs):
             return func(*args, **kwargs)
         except Exception as e:
             if '429' in str(e) or 'login_required' in str(e):  # Rate limit or login required error
-                sleep_time = min(2 ** attempt, 3000)  # Exponential backoff up to 5 minutes
+                sleep_time = min(2 ** attempt, 300)  # Exponential backoff up to 5 minutes
                 console.print(f"Rate limit or login required. Retrying in {sleep_time} seconds...")
-                time_sleep(sleep_time)  # Correct usage
+                time.sleep(sleep_time)
                 relogin(client, INSTAGRAM_USERNAME, INSTAGRAM_PASSWORD, 'session.json')
             else:
                 raise e
@@ -101,7 +120,7 @@ def main():
     tags = config.get('custom_tags', [])
 
     while True:
-        current_time = time.time()
+        current_time = time()
         
         # Check if it's time to scrape reels
         if current_time - last_scrape_time >= config['scraping']['scrape_interval_minutes'] * 60:

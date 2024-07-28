@@ -4,10 +4,8 @@ import logging
 from instagrapi import Client
 from cryptography.fernet import Fernet
 from rich.console import Console
-from instagrapi.exceptions import LoginRequired
 
 console = Console()
-logger = logging.getLogger()
 
 def generate_key():
     return Fernet.generate_key()
@@ -42,30 +40,15 @@ def load_session(client, filename='session.json'):
 def login(client, username, password, session_file='session.json'):
     if load_session(client, session_file):
         try:
-            client.login(username, password)
-
-            try:
-                client.get_timeline_feed()
-                console.print("[bold blue]Logged in using session file[/bold blue]")
-                return
-            except LoginRequired:
-                console.print("[bold red]Session is invalid, logging in with username and password[/bold red]")
-
-                old_session = client.get_settings()
-                client.set_settings({})
-                client.set_uuids(old_session["uuids"])
-
-                client.login(username, password)
-                client.inject_sessionid_to_public()  # Inject sessionid to public session
-                save_session(client, session_file)
-                console.print(f"[bold blue]Logged in using username and password, session file created - {username}[/bold blue]")
+            client.get_timeline_feed()
+            console.print("[bold blue]Logged in using session file[/bold blue]")
+            return
         except Exception as e:
             console.print(f"[bold red]Failed to login using session file: {e}[/bold red]")
 
     try:
         client.login(username, password)
         client.set_timezone_offset(-21600)  # Set CST (Chicago) timezone offset
-        client.inject_sessionid_to_public()  # Inject sessionid to public session
         save_session(client, session_file)
         console.print(f"[bold blue]Logged in using username and password, session file created - {username}[/bold blue]")
     except Exception as e:
@@ -91,38 +74,6 @@ def relogin(client, username, password, session_file='session.json'):
     update_session_file(client, session_file)
     console.print("[bold blue]Re-login successful and session file updated.[/bold blue]")
 
-def perform_login(client, username, password, session_file='session.json'):
-    if load_session(client, session_file):
-        try:
-            client.login(username, password)
-
-            try:
-                client.get_timeline_feed()
-                console.print("[bold blue]Logged in using session file[/bold blue]")
-                return
-            except LoginRequired:
-                console.print("[bold red]Session is invalid, logging in with username and password[/bold red]")
-
-                old_session = client.get_settings()
-                client.set_settings({})
-                client.set_uuids(old_session["uuids"])
-
-                client.login(username, password)
-                client.inject_sessionid_to_public()  # Inject sessionid to public session
-                save_session(client, session_file)
-                console.print(f"[bold blue]Logged in using username and password, session file created - {username}[/bold blue]")
-        except Exception as e:
-            console.print(f"[bold red]Failed to login using session file: {e}[/bold red]")
-
-    try:
-        client.login(username, password)
-        client.set_timezone_offset(-21600)  # Set CST (Chicago) timezone offset
-        client.inject_sessionid_to_public()  # Inject sessionid to public session
-        save_session(client, session_file)
-        console.print(f"[bold blue]Logged in using username and password, session file created - {username}[/bold blue]")
-    except Exception as e:
-        console.print(f"[bold red]Failed to login using username and password: {e}[/bold red]")
-
 if __name__ == "__main__":
     config = {
         'key': 'your_generated_key_here',
@@ -133,6 +84,5 @@ if __name__ == "__main__":
     }
     username, password = decrypt_credentials(config)
     client = Client()
-    client.delay_range = [1, 3]  # Mimic human behavior with delays between requests
-    perform_login(client, username, password)
+    login(client, username, password)
     update_session_file(client)

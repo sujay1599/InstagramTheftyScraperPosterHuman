@@ -7,8 +7,7 @@ from datetime import datetime
 print("="*80)
 print("Created by: Sujay1599")
 print("Program: InstgramTheftyScraperPosterHuman")
-print("Version:2.2")
-print("Working as of: 7/28/2024")
+print("Working as of: 7/20/2024")
 print("="*80)
 
 status_file = 'status.json'
