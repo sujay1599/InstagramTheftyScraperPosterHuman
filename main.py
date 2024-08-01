@@ -136,7 +136,7 @@ def main():
                 console.print("[bold purple4]Finished uploading reels[/bold purple4]")
 
                 # Randomly perform human-like actions
-                if random.random() < 0.5:
+                if random.random() < 0.2:
                     perform_human_actions(cl, tags)
 
                 console.print("[bold purple4]Displaying dashboard before waiting phase[/bold purple4]")
