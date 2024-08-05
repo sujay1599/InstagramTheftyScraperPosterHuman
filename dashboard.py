@@ -21,13 +21,13 @@ console = Console()
 def read_json_file(file_path):
     if not os.path.exists(file_path):
         console.print(f"[bold red]{file_path} not found.[/bold red]")
-        return []
+        return {}
     try:
         with open(file_path, 'r') as file:
             return json.load(file)
     except json.JSONDecodeError as e:
         console.print(f"[bold red]Error reading {file_path}: {e}[/bold red]")
-        return []
+        return {}
 
 def read_text_file(file_path):
     if not os.path.exists(file_path):
