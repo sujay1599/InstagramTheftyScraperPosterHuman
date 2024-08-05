@@ -21,7 +21,7 @@ def log_random_waits(sleep_time, profile_reel_id):
         random_waits = json.load(f)
     random_waits.append({'time': sleep_time, 'profile_reel_id': profile_reel_id})
     with open(random_waits_file, 'w') as f:
-        json.dump(random_waits, f)
+        json.dump(random_waits, f, indent=4)
     console.print(f"[bold green]Logged random wait: {sleep_time:.2f} seconds for {profile_reel_id}[/bold green]")
 
 def log_random_upload_times(sleep_time, profile_reel_id):
@@ -31,13 +31,13 @@ def log_random_upload_times(sleep_time, profile_reel_id):
         random_times = json.load(f)
     random_times.append({'time': sleep_time, 'profile_reel_id': profile_reel_id})
     with open(random_upload_time_file, 'w') as f:
-        json.dump(random_times, f)
+        json.dump(random_times, f, indent=4)
     console.print(f"[bold green]Logged random upload time: {sleep_time:.2f} seconds for {profile_reel_id}[/bold green]")
 
 def initialize_json_file(file_path, default):
     if not os.path.exists(file_path):
         with open(file_path, 'w') as f:
-            json.dump(default, f)
+            json.dump(default, f, indent=4)
         console.print(f"[bold green]Created new JSON file: {file_path}[/bold green]")
 
 def update_status(**kwargs):

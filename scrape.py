@@ -6,6 +6,7 @@ from datetime import datetime
 from tqdm import tqdm
 from rich.console import Console
 from utils import update_status, read_status, random_sleep, sleep_with_progress_bar
+from default_comments import DEFAULT_COMMENTS
 
 console = Console()
 
@@ -31,9 +32,43 @@ def perform_human_actions(client, tags):
             console.print(f"[bold yellow]Media found using {action.__name__}.[/bold yellow]")
             media = random.choice(medias)
             media_id = media.pk
-            client.media_like(media_id)
-            console.print(f"[bold yellow]Liked random media: {media_id} from tag: {random_tag}.[/bold yellow]")
             
+            # Randomly like or unlike media
+            if random.random() < 0.5:
+                if client.media_likers(media_id).usernames:
+                    client.media_unlike(media_id)
+                    console.print(f"[bold yellow]Unliked random media: {media_id} from tag: {random_tag}.[/bold yellow]")
+                else:
+                    client.media_like(media_id)
+                    console.print(f"[bold yellow]Liked random media: {media_id} from tag: {random_tag}.[/bold yellow]")
+            else:
+                client.media_like(media_id)
+                console.print(f"[bold yellow]Liked random media: {media_id} from tag: {random_tag}.[/bold yellow]")
+            
+            # Random follow/unfollow
+            if random.random() < 0.1:
+                user_to_follow = media.user.pk
+                if client.user_following(client.user_id).get(user_to_follow):
+                    client.user_unfollow(user_to_follow)
+                    console.print(f"[bold yellow]Unfollowed user: {user_to_follow}.[/bold yellow]")
+                else:
+                    client.user_follow(user_to_follow)
+                    console.print(f"[bold yellow]Followed user: {user_to_follow}.[/bold yellow]")
+
+            # Random comments
+            if random.random() < 0.1:
+                comment_text = random.choice(DEFAULT_COMMENTS)
+                client.media_comment(media_id, comment_text)
+                console.print(f"[bold yellow]Commented on media: {media_id} with text: {comment_text}.[/bold yellow]")
+            
+            # Randomly view stories
+            if random.random() < 0.1:
+                stories = client.user_stories(user_to_follow)
+                if stories:
+                    story_to_view = random.choice(stories)
+                    client.story_seen(story_to_view.id)
+                    console.print(f"[bold yellow]Viewed story: {story_to_view.id}.[/bold yellow]")
+
             sleep_time = random.uniform(5, 15)
             console.print(f"[bold yellow]Sleeping for {sleep_time:.2f} seconds to mimic human behavior.[/bold yellow]")
             sleep(sleep_time)
@@ -41,6 +76,7 @@ def perform_human_actions(client, tags):
             console.print(f"[bold bright_red]No media found for tag: {random_tag}.[/bold bright_red]")
     except Exception as e:
         console.print(f"[bold red]Failed to perform human-like actions: {e}.[/bold red]")
+        logging.error(f"Failed to perform human-like actions: {e}")
 
 def scrape_reels(client, profile, num_reels, last_scrape_time, uploaded_reels, scraped_reels, tags):
     user_id = client.user_id_from_username(profile)
@@ -63,7 +99,7 @@ def scrape_reels(client, profile, num_reels, last_scrape_time, uploaded_reels, s
                 reels.append(reel)
                 new_scraped_reels.append(profile_reel_id)
 
-                if random.random() < 0.5:
+                if random.random() < 0.01:  # Perform human-like actions 1% of the time
                     perform_human_actions(client, tags)
                 console.print(f"[bold bright_green]Scraped and saved reel: {profile_reel_id}.[/bold bright_green]")
                 
@@ -78,5 +114,6 @@ def scrape_reels(client, profile, num_reels, last_scrape_time, uploaded_reels, s
                 
         except Exception as e:
             console.print(f"[bold red]Failed to scrape or save reel {profile_reel_id}: {e}.[/bold red]")
+            logging.error(f"Failed to scrape or save reel {profile_reel_id}: {e}")
 
     return new_scraped_reels

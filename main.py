@@ -1,19 +1,18 @@
 print("="*80)
 print("Created by: Sujay1599")
 print("Program: InstgramTheftyScraperPosterHuman")
-print("Version:2.2")
-print("Working as of: 7/28/2024")
+print("Version:3.0")
+print("Working as of: 8/5/2024")
 print("="*80)
 
 import logging
 import os
 import random
-import time  # Import time module
-from time import sleep as time_sleep  # Ensure sleep function is imported correctly
+import time
+from time import sleep as time_sleep
 from tqdm import tqdm
 from config_setup import load_config
-from auth import perform_login, update_session_file, decrypt_credentials, relogin  # Import required functions
-from instagrapi import Client
+from auth import perform_login, update_session_file, decrypt_credentials, relogin, Client
 from scrape import scrape_reels, perform_human_actions
 from upload import upload_reels_with_new_descriptions, get_unuploaded_reels, load_uploaded_reels
 from utils import initialize_status_file, read_status, update_status, random_sleep, log_random_upload_times, log_random_waits, initialize_json_file, sleep_with_progress_bar, delete_old_reels
@@ -34,12 +33,17 @@ if not os.path.exists(downloads_dir):
     logging.info(f"Created directory: {downloads_dir}")
 
 # Initialize files
-initialize_status_file()
-logging.info("Initialized status file")
+if not os.path.exists('status.json'):
+    initialize_status_file()
+    logging.info("Initialized status file")
 
-# Initialize random-upload-times.json and random-waits.json
-initialize_json_file('random-upload-times.json', default=[])
-initialize_json_file('random-waits.json', default=[])
+if not os.path.exists('random-upload-times.json'):
+    initialize_json_file('random-upload-times.json', default=[])
+    logging.info("Created new random-upload-times.json file")
+
+if not os.path.exists('random-waits.json'):
+    initialize_json_file('random-waits.json', default=[])
+    logging.info("Created new random-waits.json file")
 
 # Load configuration
 config = load_config()
@@ -68,8 +72,9 @@ if proxy:
     cl.set_proxy(proxy)
 
 # Perform initial login
-perform_login(cl, INSTAGRAM_USERNAME, INSTAGRAM_PASSWORD, 'session.json')
-update_session_file(cl, 'session.json')
+session_file = os.path.join('user_sessions', f"{INSTAGRAM_USERNAME}_session.json")
+perform_login(cl, INSTAGRAM_USERNAME, INSTAGRAM_PASSWORD, session_file)
+update_session_file(cl, session_file)
 logging.info("Logged in to Instagram")
 
 def handle_rate_limit(client, func, *args, **kwargs):
@@ -82,7 +87,7 @@ def handle_rate_limit(client, func, *args, **kwargs):
                 sleep_time = min(2 ** attempt, 3000)  # Exponential backoff up to 5 minutes
                 console.print(f"Rate limit or login required. Retrying in {sleep_time} seconds...")
                 time_sleep(sleep_time)  # Correct usage
-                relogin(client, INSTAGRAM_USERNAME, INSTAGRAM_PASSWORD, 'session.json')
+                relogin(client, INSTAGRAM_USERNAME, INSTAGRAM_PASSWORD, session_file)
             else:
                 raise e
     raise Exception("Max retries exceeded")
@@ -99,6 +104,8 @@ def main():
 
     # Define tags from the configuration
     tags = config.get('custom_tags', [])
+    default_comments = config.get('comments', [])
+    default_descriptions = config.get('description', {}).get('custom_descriptions', [])
 
     while True:
         current_time = time.time()
@@ -107,7 +114,7 @@ def main():
         if current_time - last_scrape_time >= config['scraping']['scrape_interval_minutes'] * 60:
             try:
                 profiles = config['scraping']['profiles'].split()
-                uploaded_reels = load_uploaded_reels('upload_log.txt')  # Initialize uploaded_reels here
+                uploaded_reels = load_uploaded_reels('upload_log.txt')
                 for profile in profiles:
                     try:
                         scraped_reels = handle_rate_limit(cl, scrape_reels, cl, profile, config['scraping']['num_reels'], last_scrape_time, uploaded_reels, reels_scraped, tags)
@@ -126,7 +133,7 @@ def main():
                 console.print(f"[bold red]Error in scraping loop: {e}[/bold red]")
         
         # Check if it's time to upload reels
-        uploaded_reels = load_uploaded_reels('upload_log.txt')  # Ensure uploaded_reels is initialized
+        uploaded_reels = load_uploaded_reels('upload_log.txt')
         unuploaded_reels = get_unuploaded_reels('downloads', reels_scraped, uploaded_reels)
         
         if current_time - last_upload_time >= config['uploading']['upload_interval_minutes'] * 60:
@@ -136,7 +143,7 @@ def main():
                 console.print("[bold purple4]Finished uploading reels[/bold purple4]")
 
                 # Randomly perform human-like actions
-                if random.random() < 0.2:
+                if random.random() < 0.01:
                     perform_human_actions(cl, tags)
 
                 console.print("[bold purple4]Displaying dashboard before waiting phase[/bold purple4]")
@@ -146,7 +153,7 @@ def main():
                 console.print(f"[bold red]Error in upload loop: {e}[/bold red]")
         
         # Randomly perform human-like actions during the waiting period
-        if random.random() < 0.5:
+        if random.random() < 0.01:
             perform_human_actions(cl, tags)
 
         # Delete old reels based on the deletion interval
