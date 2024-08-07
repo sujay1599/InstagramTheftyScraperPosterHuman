@@ -1,12 +1,19 @@
-### Updated README for InstagramTheftyScraperPosterHuman V2.2
+### Updated README for InstagramTheftyScraperPosterHuman V3.0
 
-# InstagramTheftyScraperPosterHumanV2.2
-## 7/28/2024
+# InstagramTheftyScraperPosterHumanV3.0
+## 8/5/2024
 
-### CHANGE LOG:  
-## V2.2: [Enhanced Breakdown of Changes in InstagramTheftyScraperPosterHuman V2.2 vs InstagramTheftyScraperPosterHuman V2.1](https://github.com/sujay1599/InstagramTheftyScraperPosterHuman/wiki/Enhanced-Breakdown-of-Changes-in-InstagramTheftyScraperPosterHuman-V2.2-vs-InstagramTheftyScraperPosterHuman-V2.1)
-## V2.1: [Changes V2 to V2.1](https://github.com/sujay1599/InstagramTheftyScraperPosterHuman/wiki/Changes-V2-to-V2.1)
-## V2: [Enhanced Breakdown of Changes in InstagramTheftyScraperPosterHumanV2 vs InstagramTheftyScraperPosterHumanV1](https://github.com/sujay1599/InstagramTheftyScraperPosterHuman/wiki/Enhanced-Breakdown-of-Changes-%E2%80%90-Appended)
+### High-Level Changes
+- **Proxy Support**: Added support for proxy configuration to route Instagram requests (not yet tested).
+- **Session Management**: Improved session handling to reduce bot detection.
+- **Default Descriptions and Comments**: Moved default descriptions and comments to separate files for easier management and user customization.
+- **Configuration Enhancements**: Enhanced configuration setup to include custom descriptions and comments during the initial setup.
+- **Dashboard Improvements**: Updated the dashboard to display more detailed information, including story upload status.
+- **Human-like Actions**: Added more human-like actions, including randomly liking, unliking, following, unfollowing, and commenting.
+- **Rate Limit Handling**: Enhanced rate limit handling with retries and exponential backoff.
+
+### CHANGE LOG:
+## V3.0: [Enhanced Breakdown of Changes in InstagramTheftyScraperPosterHuman V3.0 vs InstagramTheftyScraperPosterHuman V2.2](https://github.com/sujay1599/InstagramTheftyScraperPosterHuman/wiki/Enhanced-Breakdown-of-Changes-in-InstagramTheftyScraperPosterHuman-V3.0-vs-InstagramTheftyScraperPosterHuman-V2.2)
 
 InstagramTheftyScraperPosterHuman is an advanced tool for automating the process of scraping, uploading, and managing Instagram reels. This tool builds upon previous versions, introducing several enhancements and new functionalities to improve automation, human-like interactions, and bot detection prevention.
 
@@ -25,8 +32,9 @@ InstagramTheftyScraperPosterHuman is an advanced tool for automating the process
 2. **Session Management**: Improved with `perform_login`, `update_session_file`, and `relogin` functions.
 3. **Rate Limit Handling**: Adds `handle_rate_limit` function with retries and exponential backoff.
 4. **Delay Range**: Sets a delay range for human-like behavior.
-5. **Proxy Support**: Adds support for proxies.
-6. **Error Handling**: More robust error handling with detailed logging.
+5. **Proxy Support**: Adds support for proxies (not yet tested).
+6. **Default Descriptions and Comments**: Moves default descriptions and comments to separate files for easier management.
+7. **Error Handling**: More robust error handling with detailed logging.
 
 **utils.py:**
 1. **Enhanced Logging**: Improved logging messages for better clarity.
@@ -38,10 +46,11 @@ InstagramTheftyScraperPosterHuman is an advanced tool for automating the process
 2. **Media Handling**: Simplifies the process by performing actions directly on media.
 3. **Logging Enhancements**: Improved logging messages.
 4. **Scraping Logic**: Uses `profile_reel_id` for uniqueness.
-5. **Error Handling**: More detailed logging for exceptions.
+5. **Default Comments**: Comments moved to a separate file for easier management.
+6. **Error Handling**: More detailed logging for exceptions.
 
 **upload.py:**
-1. **Default Descriptions**: Adds branding messages for social media accounts.
+1. **Default Descriptions**: Descriptions moved to a separate file for easier management.
 2. **Human-Like Actions**: More seamlessly integrated with improved logging.
 3. **Description Building**: Enhanced with additional branding messages.
 4. **Dashboard Display**: Displays the dashboard after each upload.
@@ -69,6 +78,8 @@ InstagramTheftyScraperPosterHuman is an advanced tool for automating the process
 - **Improved Dashboard**: Updated dashboard to display detailed information about scraping, uploading, and random wait times, as well as the next file to be uploaded.
 - **Human-like Interactions**: Performs random human-like actions during waiting periods, including liking and commenting on random posts from popular hashtags.
 - **Auto Restart Scraping**: Automatically initiates the scraping process when there are no more videos left to upload in the downloads directory.
+- **Proxy Support**: Users can now configure a proxy to route Instagram requests (not yet tested).
+- **Default Descriptions and Comments**: Users can now input their default descriptions and comments during setup for easier management.
 
 ## Requirements
 
@@ -100,7 +111,7 @@ pip install -r requirements.txt
    ```bash
    python config_setup.py
    ```
-   Follow the prompts to enter your configuration details. This will generate a `config.yaml` file with the necessary settings, including encrypted Instagram credentials and optional proxy settings.
+   Follow the prompts to enter your configuration details. This will generate a `config.yaml` file with the necessary settings, including encrypted Instagram credentials, proxy settings, default descriptions, and comments.
 
 ### Configuration
 
@@ -123,7 +134,10 @@ uploading:
   add_to_story: true
 description:
   use_original: true
-  custom_description: ""
+  custom_descriptions:
+    - "Custom description 1"
+    - "Custom description 2"
+    - "Custom description 3"
 hashtags:
   use_hashtags: true
   hashtags_list: "example hashtags"
@@ -133,6 +147,8 @@ leave_comment: true
 comments:
   - "Nice reel!"
   - "Great post!"
+  - "Awesome!"
+  - "Love it!"
 deleting:
   delete_interval_minutes: 1440
 custom_tags:
@@ -200,13 +216,15 @@ proxy: http://proxyserver:port # Add your proxy address here if you use one
   - `profiles`: Space-separated list of Instagram profiles to scrape reels from.
   - `num_reels`: Number of reels to scrape per profile.
   - `scrape_interval_minutes`: Interval in minutes between scraping sessions.
-- **Uploading Settings**:
+- **Uploading
+
+ Settings**:
   - `enabled`: Set to `true` to enable uploading.
   - `upload_interval_minutes`: Interval in minutes between uploads.
   - `add_to_story`: Set to `true` to add reels to your Instagram story.
 - **Description Settings**:
-  - `use_original`: Set to `true` to use the original reel description. If `false`, you will be prompted to enter a custom description.
-  - `custom_description`: The custom description to use if `use_original` is `false`.
+  - `use_original`: Set to `true` to use the original reel description. If `false`, custom descriptions will be used.
+  - `custom_descriptions`: List of custom descriptions to use if `use_original` is `false`.
 - **Hashtags Settings**:
   - `use_hashtags`: Set to `true` to use hashtags in the reel descriptions.
   - `hashtags_list`: List of hashtags to include in the reel descriptions (if `use_hashtags` is `true`).
@@ -220,7 +238,11 @@ proxy: http://proxyserver:port # Add your proxy address here if you use one
 - **Custom Tags**: List of custom tags for human-like actions.
 - **Proxy**: Optional proxy settings.
 
-## Usage
+### Default Descriptions and Comments
+
+The default descriptions and comments are used when the `use_original` option is set to `false` for descriptions and `leave_comment` is set to `true`. During the configuration setup, users can input their own default descriptions and comments. These defaults will be used during the uploading and commenting processes, providing more flexibility and personalization for the user.
+
+### Usage
 
 Run the script:
 
@@ -230,9 +252,7 @@ python main.py
 
 This will start the process of scraping, uploading, and performing human-like actions as configured in the `config.yaml` file.
 
-### Detailed Breakdown of
-
- Files
+### Detailed Breakdown of Files
 
 #### auth.py
 
@@ -257,8 +277,7 @@ Generates the `config.yaml` configuration file with encrypted credentials. Also 
    - Encrypts the Instagram username and password using the generated key.
    
 3. **Getting User Inputs**:
-   - Prompts the user for various configuration details such as profiles to scrape, number of reels, and intervals.
-   - Includes prompts for proxy settings.
+   - Prompts the user for various configuration details such as profiles to scrape, number of reels, intervals, proxy settings, default descriptions, and default comments.
    
 4. **Creating and Saving Configuration**:
    - Creates a YAML configuration file with all the provided details and encrypted credentials.
