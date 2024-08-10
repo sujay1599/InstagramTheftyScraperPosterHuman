@@ -50,8 +50,8 @@ def load_session(client, session_file):
         return True
     return False
 
-def perform_login(client, username, password, session_file):
-    """Perform login, using session if available."""
+def perform_login(client, username, password, session_file, verification_code=None):
+    """Handles logging in with or without 2FA enabled."""
     if load_session(client, session_file):
         try:
             client.login(username, password)
@@ -63,13 +63,17 @@ def perform_login(client, username, password, session_file):
         except LoginRequired:
             console.print("[bold red]Session is invalid, logging in with username and password[/bold red]")
             logger.warning("Session is invalid, logging in with username and password")
-            return login_with_credentials(client, username, password, session_file)
+            return login_with_credentials(client, username, password, session_file, verification_code)
     else:
-        return login_with_credentials(client, username, password, session_file)
+        return login_with_credentials(client, username, password, session_file, verification_code)
 
-def login_with_credentials(client, username, password, session_file):
+def login_with_credentials(client, username, password, session_file, verification_code=None):
     try:
-        client.login(username, password)
+        if verification_code:
+            client.login(username, password, verification_code=verification_code)
+        else:
+            client.login(username, password)
+        
         client.set_timezone_offset(-21600)  # Set CST (Chicago) timezone offset
         client.inject_sessionid_to_public()  # Inject sessionid to public session
         save_session(client, session_file)
@@ -134,5 +138,5 @@ if __name__ == "__main__":
     session_file = os.path.join(SESSION_DIR, f"{config['instagram']['original_username']}_session.json")
     client = Client()
     client.delay_range = [1, 3]  # Mimic human behavior with delays between requests
-    perform_login(client, username, password, session_file)  # Using perform_login function
+    perform_login(client, username, password, session_file)
     update_session_file(client, session_file)

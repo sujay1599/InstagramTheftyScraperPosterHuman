@@ -1,28 +1,3 @@
-import json
-
-def display_version_info():
-    try:
-        with open('version.txt', 'r') as f:
-            version_info = json.load(f)
-        
-        print("="*80)
-        print(f"Created by: {version_info['created_by']}")
-        print(f"Program: {version_info['program_name']}")
-        print(f"Version: {version_info['version']}")
-        print(f"Working as of: {version_info['working_as_of']}")
-        print("="*80)
-    except (FileNotFoundError, KeyError):
-        print("="*80)
-        print("Created by: Sujay1599")
-        print("Program: InstgramTheftyScraperPosterHuman")
-        print("Version: Unknown version")
-        print("Working as of: Unknown date")
-        print("="*80)
-
-if __name__ == "__main__":
-    # Display version information first
-    display_version_info()
-
 import yaml
 from cryptography.fernet import Fernet
 import getpass
@@ -71,6 +46,12 @@ def get_user_credentials():
     while True:
         username = input('Enter Instagram username: ').encode()
         password = getpass.getpass('Enter Instagram password: ').encode()
+        
+        # Check if the user has 2FA enabled
+        two_fa_enabled = get_boolean_input('Is 2FA enabled on this account? (true/false): ')
+        verification_code = None
+        if two_fa_enabled:
+            verification_code = input('Enter the 2FA verification code: ')
 
         # Initialize the Client object
         client = Client()
@@ -78,9 +59,9 @@ def get_user_credentials():
         session_file = os.path.join(SESSION_DIR, f"{username.decode()}_session.json")
 
         # Use perform_login function from auth.py to attempt login and manage session
-        if perform_login(client, username.decode(), password.decode(), session_file):
+        if perform_login(client, username.decode(), password.decode(), session_file, verification_code):
             console.print("[bold green]Login successful![/bold green]")
-            return username, password
+            return username, password, two_fa_enabled
         else:
             console.print("[bold red]Login failed. Please try again.[/bold red]")
 
@@ -178,7 +159,7 @@ def load_config(config_file=CONFIG_FILE):
 def main():
     """Main function to generate configuration and manage session files."""
     key = generate_key()
-    username, password = get_user_credentials()
+    username, password, two_fa_enabled = get_user_credentials()
     encrypted_username, encrypted_password = encrypt_credentials(username, password, key)
     
     config = create_config(encrypted_username, encrypted_password, key)
