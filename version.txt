@@ -1,6 +1,0 @@
-{
-    "created_by": "Sujay1599",
-    "program_name": "InstgramTheftyScraperPosterHuman",
-    "version": "3.0.1",
-    "working_as_of": "8/10/2024"
-}
