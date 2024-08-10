@@ -1,22 +1,23 @@
 import os
 import logging
 import random
-import time
-from datetime import datetime, timedelta
+import moviepy.editor as mp
 from time import sleep
-import subprocess
-from rich.console import Console
+from datetime import datetime, timedelta
 from utils import random_sleep, update_status, read_status, log_random_upload_times, sleep_with_progress_bar
+import subprocess
 from scrape import perform_human_actions
+from rich.console import Console
 from default_descriptions import DEFAULT_DESCRIPTIONS
 
 console = Console()
 
 def build_description(original_description, use_original, custom_description, use_hashtags, hashtags_list, give_credit, profile_username):
-    description = random.choice(DEFAULT_DESCRIPTIONS) if not original_description else (
-        original_description if use_original else custom_description or random.choice(DEFAULT_DESCRIPTIONS)
-    )
-    
+    if not original_description:
+        description = random.choice(DEFAULT_DESCRIPTIONS)
+    else:
+        description = original_description if use_original else (custom_description if custom_description else random.choice(DEFAULT_DESCRIPTIONS))
+
     if use_hashtags:
         description += f"\n{hashtags_list}"
 
@@ -50,23 +51,22 @@ def upload_reels_with_new_descriptions(client, config, unuploaded_reels, uploade
 
         original_description = read_description(description_path, reel_id)
 
-        # Safely get configurations with default values
         new_description = build_description(
             original_description,
-            config.get('description', {}).get('use_original', False),
-            config.get('description', {}).get('custom_description', ''),
-            config.get('hashtags', {}).get('use_hashtags', False),
-            config.get('hashtags', {}).get('hashtags_list', ''),
-            config.get('credit', {}).get('give_credit', False),
+            config['description']['use_original'],
+            config['description'].get('custom_description', ''),
+            config['hashtags']['use_hashtags'],
+            config['hashtags'].get('hashtags_list', ''),
+            config['credit']['give_credit'],
             profile_username
         )
         logging.debug(f"Built new description for reel {reel_id}")
 
-        if not upload_reel(client, config, media_path, new_description, profile_username, reel_id, log_filename):
+        if not upload_reel(client, media_path, new_description, profile_username, reel_id, log_filename):
             continue
 
-        if config.get('uploading', {}).get('add_to_story', False):
-            upload_to_story(client, media_path, new_description, profile_username, reel_id, config.get('uploading', {}).get('upload_interval_minutes', 10))
+        if config['uploading']['add_to_story']:
+            upload_to_story(client, media_path, new_description, profile_username, reel_id, config['uploading']['upload_interval_minutes'])
 
         update_uploaded_reels(log_filename, profile_username, reel_id)
 
@@ -79,30 +79,10 @@ def read_description(description_path, reel_id):
             return f.read()
     return ""
 
-def upload_reel(client, config, media_path, new_description, profile_username, reel_id, log_filename):
+def upload_reel(client, media_path, new_description, profile_username, reel_id, log_filename):
     try:
         client.clip_upload(media_path, new_description)
         console.print(f"[bold bright_green]Uploaded reel: {profile_username}_{reel_id} with description:\n{new_description}[/bold bright_green]")
-        
-        # Update the uploaded reels in the status
-        status = read_status()
-        if 'reels_uploaded' not in status:
-            status['reels_uploaded'] = []
-        status['reels_uploaded'].append(f"{profile_username}_{reel_id}")
-        
-        update_status(
-            last_upload_time=time.time(),
-            next_upload_time=time.time() + config['uploading']['upload_interval_minutes'] * 60,
-            reels_uploaded=status['reels_uploaded']  # Update reels_uploaded in status.json
-        )
-
-        # Log the uploaded reel in the log file
-        update_uploaded_reels(log_filename, profile_username, reel_id)
-
-        # Call the dashboard to display current status
-        console.print("[bold blue3]Displaying dashboard after upload[/bold blue3]")
-        subprocess.run(["python", "dashboard.py"])
-
         return True
     except Exception as e:
         console.print(f"[bold bright_red]Failed to upload reel {reel_id}: {e}[/bold bright_red]")
@@ -130,11 +110,11 @@ def perform_random_wait(client, config, profile_username, reel_id):
     sleep_with_progress_bar(sleep_time)
     log_random_upload_times(sleep_time, f"{profile_username}_{reel_id}")
 
-    next_upload_time = datetime.now() + timedelta(minutes=config.get('uploading', {}).get('upload_interval_minutes', 10))
+    next_upload_time = datetime.now() + timedelta(minutes=config['uploading']['upload_interval_minutes'])
     console.print(f"[bold blue3]Next upload at: {next_upload_time.strftime('%Y-%m-%d %H:%M:%S')}[/bold blue3]")
-    console.print(f"[bold blue3]Waiting for {config.get('uploading', {}).get('upload_interval_minutes', 10)} minutes before next upload[/bold blue3]")
+    console.print(f"[bold blue3]Waiting for {config['uploading']['upload_interval_minutes']} minutes before next upload[/bold blue3]")
 
-    total_wait_time = config.get('uploading', {}).get('upload_interval_minutes', 10) * 60
+    total_wait_time = config['uploading']['upload_interval_minutes'] * 60
     elapsed_time = 0
 
     while elapsed_time < total_wait_time:
@@ -145,14 +125,14 @@ def perform_random_wait(client, config, profile_username, reel_id):
 
         if random.random() < 0.01:
             console.print("[bold yellow]Performing human-like actions during wait time[/bold yellow]")
-            perform_human_actions(client, config.get('custom_tags', []))
+            perform_human_actions(client, config.get('custom_tags'))
             next_upload_time = datetime.now() + timedelta(seconds=remaining_time - interval)
             console.print(f"[bold yellow]Next upload at: {next_upload_time.strftime('%Y-%m-%d %H:%M:%S')}[/bold yellow]")
             elapsed_minutes = elapsed_time // 60
-            console.print(f"[bold yellow]Waiting for {config.get('uploading', {}).get('upload_interval_minutes', 10) - elapsed_minutes} minutes before next upload[/bold yellow]")
+            console.print(f"[bold yellow]Waiting for {config['uploading']['upload_interval_minutes'] - elapsed_minutes} minutes before next upload[/bold yellow]")
         else:
             elapsed_minutes = elapsed_time // 60
-            console.print(f"[bold blue3]Waiting for {config.get('uploading', {}).get('upload_interval_minutes', 10) - elapsed_minutes} minutes before next upload[/bold blue3]")
+            console.print(f"[bold blue3]Waiting for {config['uploading']['upload_interval_minutes'] - elapsed_minutes} minutes before next upload[/bold blue3]")
             console.print(f"[bold blue3]Next upload at {(datetime.now() + timedelta(seconds=total_wait_time - elapsed_time)).strftime('%Y-%m-%d %H:%M:%S')}[/bold blue3]")
 
 def get_unuploaded_reels(downloads_dir, scraped_reels, uploaded_reels):
