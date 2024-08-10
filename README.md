@@ -1,7 +1,3 @@
-Here is the updated README file for version 3.02:
-
----
-
 ### Updated README for InstagramTheftyScraperPosterHuman V3.02
 
 # InstagramTheftyScraperPosterHumanV3.02
@@ -400,7 +396,3 @@ Contributions are welcome! Please open an issue or submit a pull request for any
 ### Disclaimer
 
 This script is intended for educational and personal use only. Use it responsibly and ensure you comply with Instagram’s terms of service and guidelines.
-
---- 
-
-This README reflects the new updates in version 3.02, including version management, enhanced error handling, and improved integration of the dashboard.
