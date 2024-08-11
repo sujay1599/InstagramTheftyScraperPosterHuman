@@ -6,8 +6,6 @@ from instagrapi import Client
 from cryptography.fernet import Fernet
 from rich.console import Console
 from instagrapi.exceptions import LoginRequired, TwoFactorRequired
-from dotenv import load_dotenv
-
 
 console = Console()
 logger = logging.getLogger()
@@ -52,7 +50,7 @@ def load_session(client, session_file):
         return True
     return False
 
-def perform_login(client, username, password, session_file):
+def perform_login(client, username, password, session_file, verification_code=None):
     """Handles logging in with or without 2FA enabled."""
     if load_session(client, session_file):
         try:
@@ -65,14 +63,18 @@ def perform_login(client, username, password, session_file):
         except LoginRequired:
             console.print("[bold red]Session is invalid, logging in with username and password[/bold red]")
             logger.warning("Session is invalid, logging in with username and password")
-            return login_with_credentials(client, username, password, session_file)
+            return login_with_credentials(client, username, password, session_file, verification_code)
     else:
-        return login_with_credentials(client, username, password, session_file)
+        return login_with_credentials(client, username, password, session_file, verification_code)
 
-def login_with_credentials(client, username, password, session_file):
+def login_with_credentials(client, username, password, session_file, verification_code=None):
     """Attempt to log in with username and password, handling 2FA if required."""
     try:
-        client.login(username, password)
+        if verification_code:
+            client.login(username, password, verification_code=verification_code)
+        else:
+            client.login(username, password)
+        
         client.set_timezone_offset(-21600)  # Set CST (Chicago) timezone offset
         client.inject_sessionid_to_public()  # Inject sessionid to public session
         save_session(client, session_file)
@@ -85,19 +87,7 @@ def login_with_credentials(client, username, password, session_file):
         console.print("[bold yellow]Two-Factor Authentication required.[/bold yellow]")
         logger.warning("Two-Factor Authentication required.")
         two_factor_code = input("Enter the 2FA code sent to your device: ")
-        try:
-            client.login(username, password, verification_code=two_factor_code)
-            client.set_timezone_offset(-21600)  # Set CST (Chicago) timezone offset
-            client.inject_sessionid_to_public()  # Inject sessionid to public session
-            save_session(client, session_file)
-            console.print(f"[bold blue]Logged in with 2FA, session file created - {username}[/bold blue]")
-            logger.info(f"Logged in with 2FA, session file created - {username}")
-            client.login_flow()  # Simulate real user behavior after login
-            return True
-        except Exception as e:
-            console.print(f"[bold red]Failed to login using 2FA: {e}[/bold red]")
-            logger.error(f"Failed to login using 2FA: {e}")
-            return False
+        return login_with_credentials(client, username, password, session_file, two_factor_code)
     except Exception as e:
         console.print(f"[bold red]Failed to login using username and password: {e}[/bold red]")
         logger.error(f"Failed to login using username and password: {e}")

@@ -1,27 +1,3 @@
-import json
-
-def display_version_info():
-    try:
-        with open('version.txt', 'r') as f:
-            version_info = json.load(f)
-        
-        print("="*80)
-        print(f"Created by: {version_info['created_by']}")
-        print(f"Program: {version_info['program_name']}")
-        print(f"Version: {version_info['version']}")
-        print(f"Working as of: {version_info['working_as_of']}")
-        print("="*80)
-    except (FileNotFoundError, KeyError):
-        print("="*80)
-        print("Created by: Sujay1599")
-        print("Program: InstgramTheftyScraperPosterHuman")
-        print("Version: Unknown version")
-        print("Working as of: Unknown date")
-        print("="*80)
-
-if __name__ == "__main__":
-    display_version_info()
-
 import logging
 import os
 import random
