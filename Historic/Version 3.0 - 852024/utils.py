@@ -2,6 +2,7 @@ import json
 import os
 import random
 import logging
+import time
 from rich.console import Console
 from datetime import datetime
 from time import sleep
@@ -43,7 +44,14 @@ def initialize_json_file(file_path, default):
 def update_status(**kwargs):
     status_file = 'status.json'
     status = read_status()
-    status.update(kwargs)
+
+    # Update the status dictionary with the provided keyword arguments
+    for key, value in kwargs.items():
+        if key in status and isinstance(status[key], list) and isinstance(value, list):
+            status[key].extend(value)  # Merge lists
+        else:
+            status[key] = value  # Overwrite or add new key-value pairs
+
     with open(status_file, 'w') as f:
         json.dump(status, f, indent=4, default=str)
     console.print("[bold green]Updated status file.[/bold green]")
@@ -100,22 +108,32 @@ def initialize_status_file():
 
 def sleep_with_progress_bar(duration):
     from tqdm import tqdm
-    console.print(f"[bold blue]Sleeping for {duration} seconds.[/bold blue]")
-    for _ in tqdm(range(int(duration)), desc="Sleeping", unit="s"):
-        sleep(1)
+    interval = 10  # Set the interval to 10 seconds
+    total_intervals = int(duration) // interval  # Number of full intervals
+    remainder = int(duration) % interval  # Remaining time after full intervals
+
+    console.print(f"[bold blue]Sleeping for {duration:.2f} seconds in 10-second intervals.[/bold blue]")
+    
+    for _ in tqdm(range(total_intervals), desc="Sleeping", unit="interval", ncols=100):
+        sleep(interval)
+    
+    if remainder > 0:
+        sleep(remainder)
+        tqdm.write(f"Finished sleeping additional {remainder} seconds.")
+
     console.print("[bold blue]Finished sleeping.[/bold blue]")
 
-def delete_old_reels(delete_interval_minutes):
+def delete_old_reels(delete_interval_minutes, config):
     status = read_status()
     last_delete_time = status.get('last_delete_time', 0) or 0
     current_time = datetime.now().timestamp()
 
     if (current_time - last_delete_time) >= delete_interval_minutes * 60:
         console.print("[bold blue]Starting the deletion process...[/bold blue]")
-        delete_uploaded_files()
+        delete_uploaded_files(config)
         console.print("[bold blue]Deletion process completed.[/bold blue]")
 
-def delete_uploaded_files():
+def delete_uploaded_files(config):
     upload_log = read_upload_log()
     if not upload_log:
         console.print("[bold yellow]No files to delete.[/bold yellow]")
@@ -127,12 +145,19 @@ def delete_uploaded_files():
         for extension in ['.mp4', '.txt', '.mp4.jpg']:
             file_path = os.path.join('downloads', file_prefix + extension)
             if os.path.exists(file_path):
-                os.remove(file_path)
-                deleted_files.append(file_path)
-                console.print(f"[bold green]Deleted file:[/bold green] {file_path}")
+                try:
+                    os.remove(file_path)
+                    deleted_files.append(file_path)
+                    console.print(f"[bold green]Deleted file:[/bold green] {file_path}")
+                except Exception as e:
+                    console.print(f"[bold red]Error deleting file {file_path}: {e}[/bold red]")
 
     if deleted_files:
-        update_status(last_delete_time=datetime.now().timestamp())
+        # Update status after successful deletion
+        update_status(
+            last_delete_time=time.time(),
+            next_deletion_time=time.time() + config['deleting']['delete_interval_minutes'] * 60
+        )
         console.print(f"[bold green]Updated status with last delete time: {datetime.now()}[/bold green]")
     else:
         console.print("[bold yellow]No matching files found to delete.[/bold yellow]")

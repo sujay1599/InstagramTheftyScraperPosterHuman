@@ -9,6 +9,7 @@ from rich.console import Console
 from utils import random_sleep, update_status, read_status, log_random_upload_times, sleep_with_progress_bar
 from scrape import perform_human_actions
 from default_descriptions import DEFAULT_DESCRIPTIONS
+from auth import relogin  # Import the relogin function
 
 console = Console()
 
@@ -32,7 +33,7 @@ def load_uploaded_reels(log_filename):
             uploaded_reels = set(line.strip() for line in log_file)
     return uploaded_reels
 
-def upload_reels_with_new_descriptions(client, config, unuploaded_reels, uploaded_reels, log_filename):
+def upload_reels_with_new_descriptions(client, config, unuploaded_reels, uploaded_reels, log_filename, session_file):
     if not unuploaded_reels:
         console.print("[bold bright_red]No new reels to upload[/bold bright_red]")
         return
@@ -62,7 +63,7 @@ def upload_reels_with_new_descriptions(client, config, unuploaded_reels, uploade
         )
         logging.debug(f"Built new description for reel {reel_id}")
 
-        if not upload_reel(client, config, media_path, new_description, profile_username, reel_id, log_filename):
+        if not upload_reel(client, config, media_path, new_description, profile_username, reel_id, log_filename, session_file):
             continue
 
         if config.get('uploading', {}).get('add_to_story', False):
@@ -79,34 +80,42 @@ def read_description(description_path, reel_id):
             return f.read()
     return ""
 
-def upload_reel(client, config, media_path, new_description, profile_username, reel_id, log_filename):
-    try:
-        client.clip_upload(media_path, new_description)
-        console.print(f"[bold bright_green]Uploaded reel: {profile_username}_{reel_id} with description:\n{new_description}[/bold bright_green]")
-        
-        # Update the uploaded reels in the status
-        status = read_status()
-        if 'reels_uploaded' not in status:
-            status['reels_uploaded'] = []
-        status['reels_uploaded'].append(f"{profile_username}_{reel_id}")
-        
-        update_status(
-            last_upload_time=time.time(),
-            next_upload_time=time.time() + config['uploading']['upload_interval_minutes'] * 60,
-            reels_uploaded=status['reels_uploaded']  # Update reels_uploaded in status.json
-        )
+def upload_reel(client, config, media_path, new_description, profile_username, reel_id, log_filename, session_file, retries=3):
+    for attempt in range(retries):
+        try:
+            client.clip_upload(media_path, new_description)
+            console.print(f"[bold bright_green]Uploaded reel: {profile_username}_{reel_id} with description:\n{new_description}[/bold bright_green]")
+            
+            # Update the uploaded reels in the status
+            status = read_status()
+            if 'reels_uploaded' not in status:
+                status['reels_uploaded'] = []
+            status['reels_uploaded'].append(f"{profile_username}_{reel_id}")
+            
+            update_status(
+                last_upload_time=time.time(),
+                next_upload_time=time.time() + config['uploading']['upload_interval_minutes'] * 60,
+                reels_uploaded=status['reels_uploaded']  # Update reels_uploaded in status.json
+            )
 
-        # Log the uploaded reel in the log file
-        update_uploaded_reels(log_filename, profile_username, reel_id)
+            # Log the uploaded reel in the log file
+            update_uploaded_reels(log_filename, profile_username, reel_id)
 
-        # Call the dashboard to display current status
-        console.print("[bold blue3]Displaying dashboard after upload[/bold blue3]")
-        subprocess.run(["python", "dashboard.py"])
+            # Call the dashboard to display current status
+            console.print("[bold blue3]Displaying dashboard after upload[/bold blue3]")
+            subprocess.run(["python", "dashboard.py"])
 
-        return True
-    except Exception as e:
-        console.print(f"[bold bright_red]Failed to upload reel {reel_id}: {e}[/bold bright_red]")
-        return False
+            return True
+        except Exception as e:
+            console.print(f"[bold bright_red]Failed to upload reel {reel_id}: {e}[/bold bright_red]")
+            if '400' in str(e) and attempt < retries - 1:  # Retry if it's a session issue
+                console.print("[bold yellow]Re-login required, attempting to re-login...[/bold yellow]")
+                relogin(client, config['instagram']['original_username'], config['instagram']['password'], session_file)
+                continue  # Retry the upload after re-login
+            else:
+                console.print(f"[bold red]Max retries exceeded or unknown error occurred for reel {reel_id}. Skipping upload.[/bold red]")
+                break
+    return False
 
 def upload_to_story(client, media_path, new_description, profile_username, reel_id, upload_interval_minutes):
     try:

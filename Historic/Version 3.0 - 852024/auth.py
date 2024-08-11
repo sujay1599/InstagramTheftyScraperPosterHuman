@@ -1,10 +1,11 @@
 import json
 import os
 import logging
+import time
 from instagrapi import Client
 from cryptography.fernet import Fernet
 from rich.console import Console
-from instagrapi.exceptions import LoginRequired
+from instagrapi.exceptions import LoginRequired, PrivateError
 
 console = Console()
 logger = logging.getLogger()
@@ -34,7 +35,10 @@ def decrypt_credentials(config):
     return decrypted_username, decrypted_password
 
 def save_session(client, session_file):
-    client.dump_settings(session_file)
+    settings = client.get_settings()
+    settings['last_login'] = time.time()
+    with open(session_file, 'w') as f:
+        json.dump(settings, f, indent=4)
     console.print(f"[bold blue]Session file created/updated: {session_file}[/bold blue]")
     logger.info(f"Session file created/updated: {session_file}")
 
@@ -46,18 +50,24 @@ def load_session(client, session_file):
         return True
     return False
 
-def login(client, username, password, session_file):
+def perform_login(client, username, password, session_file):
+    """Perform login, using session if available."""
     if load_session(client, session_file):
         try:
             client.login(username, password)
-            client.get_timeline_feed()
+            client.get_timeline_feed()  # Ensure session is still valid
             console.print("[bold blue]Logged in using session file[/bold blue]")
             logger.info("Logged in using session file")
+            client.login_flow()  # Simulate real user behavior after login
             return True
         except LoginRequired:
             console.print("[bold red]Session is invalid, logging in with username and password[/bold red]")
             logger.warning("Session is invalid, logging in with username and password")
+            return login_with_credentials(client, username, password, session_file)
+    else:
+        return login_with_credentials(client, username, password, session_file)
 
+def login_with_credentials(client, username, password, session_file):
     try:
         client.login(username, password)
         client.set_timezone_offset(-21600)  # Set CST (Chicago) timezone offset
@@ -65,47 +75,27 @@ def login(client, username, password, session_file):
         save_session(client, session_file)
         console.print(f"[bold blue]Logged in using username and password, session file created - {username}[/bold blue]")
         logger.info(f"Logged in using username and password, session file created - {username}")
+        client.login_flow()  # Simulate real user behavior after login
         return True
     except Exception as e:
         console.print(f"[bold red]Failed to login using username and password: {e}[/bold red]")
         logger.error(f"Failed to login using username and password: {e}")
         return False
 
-def update_session_file(client, session_file):
-    save_session(client, session_file)
-
-def relogin(client, username, password, session_file):
+def relogin(client, session_file):
     console.print("[bold blue]Attempting to re-login to Instagram...[/bold blue]")
     logger.info("Attempting to re-login to Instagram")
-    client.relogin()
-    client.set_timezone_offset(-21600)  # Ensure timezone offset is set during re-login
-    update_session_file(client, session_file)
-    console.print("[bold blue]Re-login successful and session file updated.[/bold blue]")
-    logger.info("Re-login successful and session file updated")
-
-def perform_login(client, username, password, session_file):
-    if load_session(client, session_file):
-        try:
-            client.login(username, password)
-            client.get_timeline_feed()
-            console.print("[bold blue]Logged in using session file[/bold blue]")
-            logger.info("Logged in using session file")
-            return True
-        except LoginRequired:
-            console.print("[bold red]Session is invalid, logging in with username and password[/bold red]")
-            logger.warning("Session is invalid, logging in with username and password")
-
     try:
-        client.login(username, password)
-        client.set_timezone_offset(-21600)  # Set CST (Chicago) timezone offset
-        client.inject_sessionid_to_public()  # Inject sessionid to public session
+        client.relogin()
+        client.set_timezone_offset(-21600)  # Ensure timezone offset is set during re-login
         save_session(client, session_file)
-        console.print(f"[bold blue]Logged in using username and password, session file created - {username}[/bold blue]")
-        logger.info(f"Logged in using username and password, session file created - {username}")
+        console.print("[bold blue]Re-login successful and session file updated.[/bold blue]")
+        logger.info("Re-login successful and session file updated")
+        client.login_flow()  # Simulate real user behavior after login
         return True
     except Exception as e:
-        console.print(f"[bold red]Failed to login using username and password: {e}[/bold red]")
-        logger.error(f"Failed to login using username and password: {e}")
+        console.print(f"[bold red]Failed to re-login: {e}[/bold red]")
+        logger.error(f"Failed to re-login: {e}")
         return False
 
 def login_by_sessionid(client, sessionid, session_file):
@@ -116,24 +106,33 @@ def login_by_sessionid(client, sessionid, session_file):
         save_session(client, session_file)
         console.print(f"[bold blue]Logged in using sessionid, session file created - {sessionid}[/bold blue]")
         logger.info(f"Logged in using sessionid, session file created - {sessionid}")
+        client.login_flow()  # Simulate real user behavior after login
         return True
     except Exception as e:
         console.print(f"[bold red]Failed to login using sessionid: {e}[/bold red]")
         logger.error(f"Failed to login using sessionid: {e}")
         return False
 
+def update_session_file(client, session_file):
+    save_session(client, session_file)
+
 if __name__ == "__main__":
+    import time
+    from dotenv import load_dotenv
+
+    load_dotenv()  # Load environment variables from a .env file
+
     config = {
-        'key': 'your_generated_key_here',
+        'key': os.getenv('ENCRYPTION_KEY'),  # Load key from environment variable
         'instagram': {
-            'username': 'your_encrypted_username_here',
-            'password': 'your_encrypted_password_here',
-            'original_username': 'your_original_username_here'  # This should be added to the config in setup_config.py
+            'username': os.getenv('ENCRYPTED_USERNAME'),
+            'password': os.getenv('ENCRYPTED_PASSWORD'),
+            'original_username': os.getenv('INSTAGRAM_USERNAME')  # Load original username
         }
     }
     username, password = decrypt_credentials(config)
     session_file = os.path.join(SESSION_DIR, f"{config['instagram']['original_username']}_session.json")
     client = Client()
     client.delay_range = [1, 3]  # Mimic human behavior with delays between requests
-    perform_login(client, username, password, session_file)
+    perform_login(client, username, password, session_file)  # Using perform_login function
     update_session_file(client, session_file)

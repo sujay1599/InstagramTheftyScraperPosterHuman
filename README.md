@@ -17,6 +17,32 @@ Here is the updated README file for version 3.02:
 ### CHANGE LOG:
 ## V3.02: [Enhanced Breakdown of Changes in InstagramTheftyScraperPosterHuman V3.02 vs InstagramTheftyScraperPosterHuman V3.0](https://github.com/sujay1599/InstagramTheftyScraperPosterHuman/wiki/Enhanced-Breakdown-of-Changes-in-InstagramTheftyScraperPosterHuman-V3.02-vs-InstagramTheftyScraperPosterHuman-V3.0)
 
+
+### Hotfix Version 3.02: Enhancements and Simplifications
+
+**Date:** 08/10/2024
+
+**Changes in this update:**
+
+1. **Global Session Management**:
+    - **Improvement**: The `session_file` is now managed globally within the main script, simplifying the codebase by reducing the need to pass it as an argument to multiple functions.
+    - **Impact**: This change minimizes the risk of errors related to missing or improperly passed session files during the upload process, improving overall script stability.
+
+2. **Config Object Enhancement**:
+    - **Improvement**: The `session_file` has been added to the `config` object, ensuring consistent access to session information across the script.
+    - **Impact**: By centralizing session management within the `config` object, the script is now more maintainable, and the handling of session-related tasks is streamlined.
+
+3. **Error Handling Improvement**:
+    - **Improvement**: Enhanced error handling within the `handle_rate_limit` function to better manage scenarios where Instagram’s rate limits or login requirements are encountered.
+    - **Impact**: This ensures smoother script operation even under challenging conditions, such as multiple logins or when actions are performed on the account from another device.
+
+4. **Bug Fixes**:
+    - **Fixed**: Addressed an issue where the script would fail during the upload process due to a missing `session_file` argument. This fix ensures that all necessary variables are available and properly managed.
+    - **Fixed**: Errors related to session handling and relogins have been addressed, reducing the chances of unexpected terminations during prolonged script execution.
+
+These updates in Version 3.02 are focused on enhancing the reliability and maintainability of the script, ensuring smoother operation and easier management of session-related tasks.
+
+
 InstagramTheftyScraperPosterHuman continues to evolve, adding new features and refining existing ones to improve the automation process, mimic human interactions more effectively, and enhance the overall user experience.
 
 ### Key Differences and Enhancements in Version 3.02
