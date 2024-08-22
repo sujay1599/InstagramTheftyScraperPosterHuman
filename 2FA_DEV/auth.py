@@ -5,7 +5,7 @@ import time
 from instagrapi import Client
 from cryptography.fernet import Fernet
 from rich.console import Console
-from instagrapi.exceptions import LoginRequired, PrivateError
+from instagrapi.exceptions import LoginRequired, TwoFactorRequired
 
 console = Console()
 logger = logging.getLogger()
@@ -68,6 +68,7 @@ def perform_login(client, username, password, session_file, verification_code=No
         return login_with_credentials(client, username, password, session_file, verification_code)
 
 def login_with_credentials(client, username, password, session_file, verification_code=None):
+    """Attempt to log in with username and password, handling 2FA if required."""
     try:
         if verification_code:
             client.login(username, password, verification_code=verification_code)
@@ -81,6 +82,12 @@ def login_with_credentials(client, username, password, session_file, verificatio
         logger.info(f"Logged in using username and password, session file created - {username}")
         client.login_flow()  # Simulate real user behavior after login
         return True
+    except TwoFactorRequired:
+        # Handle 2FA
+        console.print("[bold yellow]Two-Factor Authentication required.[/bold yellow]")
+        logger.warning("Two-Factor Authentication required.")
+        two_factor_code = input("Enter the 2FA code sent to your device: ")
+        return login_with_credentials(client, username, password, session_file, two_factor_code)
     except Exception as e:
         console.print(f"[bold red]Failed to login using username and password: {e}[/bold red]")
         logger.error(f"Failed to login using username and password: {e}")
@@ -121,7 +128,6 @@ def update_session_file(client, session_file):
     save_session(client, session_file)
 
 if __name__ == "__main__":
-    import time
     from dotenv import load_dotenv
 
     load_dotenv()  # Load environment variables from a .env file
