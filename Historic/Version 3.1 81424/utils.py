@@ -48,9 +48,7 @@ def update_status(**kwargs):
     # Update the status dictionary with the provided keyword arguments
     for key, value in kwargs.items():
         if key in status and isinstance(status[key], list) and isinstance(value, list):
-            # Merge lists and ensure no duplicates
-            combined_list = list(set(status[key] + value))
-            status[key] = combined_list
+            status[key].extend(value)  # Merge lists
         else:
             status[key] = value  # Overwrite or add new key-value pairs
 

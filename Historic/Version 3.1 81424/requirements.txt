@@ -22,4 +22,3 @@ tqdm
 typing-extensions
 urllib3
 wheel
-python-dotenv ##2fa

@@ -1,9 +1,9 @@
-import json  # <-- Add this line at the top of your file
 import logging
 import random
 import os
 from time import sleep
 from datetime import datetime
+from tqdm import tqdm
 from rich.console import Console
 from utils import update_status, read_status, random_sleep, sleep_with_progress_bar
 from default_comments import DEFAULT_COMMENTS
@@ -81,12 +81,12 @@ def perform_human_actions(client, tags):
 def scrape_reels(client, profile, num_reels, last_scrape_time, uploaded_reels, scraped_reels, tags):
     user_id = client.user_id_from_username(profile)
     reels = []
-    new_scraped_reels = set(scraped_reels)  # Initialize as a set to avoid duplicates
+    new_scraped_reels = []
 
     for reel in client.user_clips(user_id, amount=num_reels):
         reel_id_str = str(reel.pk)  # Ensure reel_id is treated as a string
         profile_reel_id = f"{profile}_{reel_id_str}"
-        if profile_reel_id in uploaded_reels or profile_reel_id in new_scraped_reels:
+        if profile_reel_id in uploaded_reels or profile_reel_id in scraped_reels:
             continue
 
         try:
@@ -97,7 +97,7 @@ def scrape_reels(client, profile, num_reels, last_scrape_time, uploaded_reels, s
                     f.write(reel.caption_text or '')
 
                 reels.append(reel)
-                new_scraped_reels.add(profile_reel_id)  # Add to the set
+                new_scraped_reels.append(profile_reel_id)
 
                 if random.random() < 0.01:  # Perform human-like actions 1% of the time
                     perform_human_actions(client, tags)
@@ -107,36 +107,13 @@ def scrape_reels(client, profile, num_reels, last_scrape_time, uploaded_reels, s
                 console.print(f"[bold bright_green]Sleeping for {sleep_time:.2f} seconds before next reel scrape.[/bold bright_green]")
                 sleep_with_progress_bar(sleep_time)
                 
-                # Update status after each reel is scraped, avoiding duplicates
+                # Update status after each reel is scraped
                 status = read_status()
-                if profile_reel_id not in status['reels_scraped']:
-                    status['reels_scraped'].append(profile_reel_id)
-                    update_status(last_scrape_time=datetime.now().timestamp(), reels_scraped=list(new_scraped_reels))
+                status['reels_scraped'].append(profile_reel_id)
+                update_status(last_scrape_time=datetime.now().timestamp(), reels_scraped=status['reels_scraped'])
                 
         except Exception as e:
             console.print(f"[bold red]Failed to scrape or save reel {profile_reel_id}: {e}.[/bold red]")
             logging.error(f"Failed to scrape or save reel {profile_reel_id}: {e}")
 
-    return list(new_scraped_reels)  # Convert set to list for return
-
-def display_version_info():
-    try:
-        with open('version.txt', 'r') as f:
-            version_info = json.load(f)
-        
-        print("="*80)
-        print(f"Created by: {version_info['created_by']}")
-        print(f"Program: {version_info['program_name']}")
-        print(f"Version: {version_info['version']}")
-        print(f"Working as of: {version_info['working_as_of']}")
-        print("="*80)
-    except (FileNotFoundError, KeyError):
-        print("="*80)
-        print("Created by: Sujay1599")
-        print("Program: InstgramTheftyScraperPosterHuman")
-        print("Version: Unknown version")
-        print("Working as of: Unknown date")
-        print("="*80)
-
-if __name__ == "__main__":
-    display_version_info()
+    return new_scraped_reels

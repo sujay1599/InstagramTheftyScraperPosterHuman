@@ -1,128 +1,55 @@
-Here is the updated README file for version 3.02:
+## Version 3.1.1 - August 22, 2024
 
----
+### New Features and Enhancements
 
-### Updated README for InstagramTheftyScraperPosterHuman V3.02
+1. **Version Control Integration**
+   - Added a `version.txt` file to manage version control, allowing the program to display information such as the creator, version number, and the last known working date at startup.
+   - Example format for `version.txt`:
+     ```json
+     {
+         "created_by": "Sujay1599",
+         "program_name": "InstagramTheftyScraperPosterHuman",
+         "version": "3.1.1",
+         "working_as_of": "2024-08-22"
+     }
+     ```
 
-# InstagramTheftyScraperPosterHumanV3.02
-## 8/10/2024
+2. **Improved Status Management**
+   - Enhanced the `update_status()` function to merge lists (e.g., `reels_scraped`) while ensuring no duplicates are added.
+   - Used sets in `scrape.py` to track `reels_scraped` and convert them back to lists for JSON storage, preventing duplication.
 
-### High-Level Changes in Version 3.02
-- **Version Management**: Added a version management system where the version number and program details are read from a `version.txt` file, allowing easier updates and consistency across the project.
-- **Enhanced Error Handling**: Improved error handling throughout the code to catch and log potential issues more effectively.
-- **Session Management**: Further refinements in session handling to ensure seamless operation and reduced bot detection.
-- **Optimized Logging**: Enhanced logging for better traceability and debugging, including more detailed logs for session handling and random wait times.
-- **Code Refactoring**: Refactored various parts of the code to improve readability, modularity, and maintainability.
+3. **Human-like Behavior Simulation**
+   - Refined the `perform_human_actions()` function to include randomized human-like behaviors, such as liking, following/unfollowing, and commenting on posts.
+   - Improved the `random_sleep()` function to log wait times, adding more randomness and realism to the bot's actions.
 
-### CHANGE LOG:
-## V3.02: [Enhanced Breakdown of Changes in InstagramTheftyScraperPosterHuman V3.02 vs InstagramTheftyScraperPosterHuman V3.0](https://github.com/sujay1599/InstagramTheftyScraperPosterHuman/wiki/Enhanced-Breakdown-of-Changes-in-InstagramTheftyScraperPosterHuman-V3.02-vs-InstagramTheftyScraperPosterHuman-V3.0)
+4. **Enhanced Error Handling and Logging**
+   - Added comprehensive logging across all functions to track execution, errors, and specific actions like waits and deletions.
+   - Improved error handling in functions like `scrape_reels()` and `handle_rate_limit()` to manage issues like rate limits and failed scrapes/upload attempts gracefully.
 
+5. **File Management and Initialization**
+   - Implemented automatic initialization for JSON files such as `status.json` using `initialize_json_file()` and `initialize_status_file()` to ensure they are properly set up with default values.
+   - Enhanced file cleanup with functions like `delete_old_reels()` and `delete_uploaded_files()` to manage storage efficiently by deleting old or unnecessary files.
 
-### Hotfix Version 3.02: Enhancements and Simplifications
+6. **Progress Feedback**
+   - Integrated a progress bar during sleep intervals with the `sleep_with_progress_bar()` function to provide visual feedback during long-running operations.
 
-**Date:** 08/10/2024
+7. **Configuration and Flexibility**
+   - All behaviors (e.g., scraping intervals, uploading intervals, human-like actions) are configurable via a `config.yaml` file, making it easy to customize the bot's actions to suit different use cases.
 
-**Changes in this update:**
+### Installation
 
-1. **Global Session Management**:
-    - **Improvement**: The `session_file` is now managed globally within the main script, simplifying the codebase by reducing the need to pass it as an argument to multiple functions.
-    - **Impact**: This change minimizes the risk of errors related to missing or improperly passed session files during the upload process, improving overall script stability.
-
-2. **Config Object Enhancement**:
-    - **Improvement**: The `session_file` has been added to the `config` object, ensuring consistent access to session information across the script.
-    - **Impact**: By centralizing session management within the `config` object, the script is now more maintainable, and the handling of session-related tasks is streamlined.
-
-3. **Error Handling Improvement**:
-    - **Improvement**: Enhanced error handling within the `handle_rate_limit` function to better manage scenarios where Instagram’s rate limits or login requirements are encountered.
-    - **Impact**: This ensures smoother script operation even under challenging conditions, such as multiple logins or when actions are performed on the account from another device.
-
-4. **Bug Fixes**:
-    - **Fixed**: Addressed an issue where the script would fail during the upload process due to a missing `session_file` argument. This fix ensures that all necessary variables are available and properly managed.
-    - **Fixed**: Errors related to session handling and relogins have been addressed, reducing the chances of unexpected terminations during prolonged script execution.
-
-These updates in Version 3.02 are focused on enhancing the reliability and maintainability of the script, ensuring smoother operation and easier management of session-related tasks.
-
-
-InstagramTheftyScraperPosterHuman continues to evolve, adding new features and refining existing ones to improve the automation process, mimic human interactions more effectively, and enhance the overall user experience.
-
-### Key Differences and Enhancements in Version 3.02
-
-**auth.py:**
-1. **Version Management**: Integrated version management to display the current version of the script upon execution.
-2. **Error Handling**: Improved error handling during the session load and login processes.
-3. **Session File Management**: Enhanced session file management to ensure session persistence across runs.
-
-**config_setup.py:**
-1. **Version Display**: Displays the current version of the script before starting the configuration process.
-2. **Input Validation**: Improved input validation during the configuration setup to ensure correct data entry.
-
-**main.py:**
-1. **Version Management**: The version is now displayed at the start of the program, sourced from the `version.txt` file.
-2. **Error Handling**: Enhanced error handling for the main loop, with better logging for unexpected issues.
-3. **Session Management**: Further refined the session management process to reduce bot detection and handle session expirations gracefully.
-
-**dashboard.py:**
-1. **Version Display**: Now displays the current version of the program on the dashboard.
-2. **Error Logging**: Improved error logging when reading and displaying dashboard data.
-
-**utils.py:**
-1. **File Management**: Enhanced file management functions to handle missing or corrupted files more gracefully.
-2. **Version Handling**: Added utility functions for managing and displaying the program version.
-
-**scrape.py:**
-1. **Human-Like Actions**: Further refined human-like actions to improve mimicry of real user behavior.
-2. **Logging Enhancements**: Improved logging during the scraping process for better traceability.
-
-**upload.py:**
-1. **Dashboard Integration**: The dashboard is now displayed after every successful upload to provide real-time feedback on the program's status.
-2. **Error Handling**: Improved error handling during the upload process to catch and log issues more effectively.
-
-## Features
-
-### Core Features
-
-- **Scraping Reels**: Scrapes reels from specified Instagram profiles.
-- **Uploading Reels**: Uploads scraped reels with customizable descriptions and hashtags.
-- **Human-like Actions**: Performs random actions like liking, commenting, and following to mimic human behavior.
-- **Dashboard**: Displays detailed information about activities.
-- **Anti-Bot Detection**: Implements random waits and actions to avoid detection.
-- **Logging**: Logs all activities for better traceability and debugging.
-- **Configurable Settings**: Uses a YAML configuration file for easy customization.
-
-### New Features in InstagramTheftyScraperPosterHuman V3.02
-
-- **Version Management**: The version is now managed centrally in a `version.txt` file and displayed across all scripts.
-- **Enhanced Random Waits**: Improved the random wait mechanism to better simulate human behavior and avoid detection.
-- **Improved Error Handling**: Enhanced error handling across all scripts for more robust operation and better logging.
-- **Dashboard Integration**: The dashboard is now more integrated into the workflow, providing real-time feedback after each significant action.
-
-## Requirements
-
-- Python 3.6+
-- Required Python packages (specified in `requirements.txt`)
-
-### Install Required Packages
-
-You can install all the required packages using the following command:
-
-```bash
-pip install -r requirements.txt
-```
-
-## Installation
-
-1. Clone the repository:
+1. **Clone the repository:**
    ```bash
    git clone https://github.com/sujay1599/InstagramTheftyScraperPosterHuman.git
    cd InstagramTheftyScraperPosterHuman
    ```
 
-2. Install the required packages using `requirements.txt`:
+2. **Install the required packages using `requirements.txt`:**
    ```bash
    pip install -r requirements.txt
    ```
 
-3. Run `config_setup.py` to create the `config.yaml` file:
+3. **Run `config_setup.py` to create the `config.yaml` file:**
    ```bash
    python config_setup.py
    ```
@@ -225,208 +152,57 @@ proxy: http://proxyserver:port # Add your proxy address here if you use one
 
 ### Configuration Details
 
-- **Instagram Credentials**: Provide your Instagram username and password. These will be encrypted and stored securely.
-- **Scraping Settings**:
+- **Instagram Credentials:** Provide your Instagram username and password. These will be encrypted and stored securely.
+
+- **Scraping Settings:**
   - `enabled`: Set to `true` to enable scraping.
   - `profiles`: Space-separated list of Instagram profiles to scrape reels from.
   - `num_reels`: Number of reels to scrape per profile.
   - `scrape_interval_minutes`: Interval in minutes between scraping sessions.
-- **Uploading Settings**:
+
+- **Uploading Settings:**
   - `enabled`: Set to `true` to enable uploading.
   - `upload_interval_minutes`: Interval in minutes between uploads.
   - `add_to_story`: Set to `true` to add reels to your Instagram story.
-- **Description Settings**:
+
+- **Description Settings:**
   - `use_original`: Set to `true` to use the original reel description. If `false`, custom descriptions will be used.
   - `custom_descriptions`: List of custom descriptions to use if `use_original` is `false`.
-- **Hashtags Settings**:
+
+- **Hashtags Settings:**
   - `use_hashtags`: Set to `true` to use hashtags in the reel descriptions.
   - `hashtags_list`: List of hashtags to include in the reel descriptions (if `use_hashtags` is `true`).
-- **Credit Settings**:
+
+- **Credit Settings:**
   - `give_credit`: Set to `true` to give credit to the original poster in the reel descriptions.
-- **Deleting Settings**:
+
+- **Deleting Settings:**
   - `delete_interval_minutes`: Interval in minutes between deletions.
-- **Comments**:
+
+- **Comments:**
   - `leave_comment`: Set to `true` to leave comments on scraped videos.
   - `comments`: List of comments to leave if `leave_comment` is `true`.
-- **Custom Tags**: List of custom tags for human-like actions.
-- **Proxy**: Optional proxy settings.
 
-### Default Descriptions and Comments
+- **Custom Tags:** List of custom tags for human-like actions.
 
-The default descriptions and comments are used when the `use_original` option is set to `false` for descriptions and `
+- **Proxy:** Optional proxy settings.
 
-leave_comment` is set to `true`. During the configuration setup, users can input their own default descriptions and comments. These defaults will be used during the uploading and commenting processes, providing more flexibility and personalization for the user.
+### How to Update
 
-### Usage
+1. **Download the latest version** of the program.
+2. **Update your `version.txt` file** to reflect the new version information:
+   ```json
+   {
+       "created_by": "Sujay1599",
+       "program_name": "InstagramTheftyScraperPosterHuman",
+       "version": "3.1.1",
+       "working_as_of": "2024-08-22"
+   }
+   ```
+3. **Ensure that your `config.yaml` file** is updated according to your requirements, making use of the new configurations available.
+4. **Run the program** as usual to start using the new features.
 
-Run the script:
+### Known Issues
 
-```bash
-python main.py
-```
-
-This will start the process of scraping, uploading, and performing human-like actions as configured in the `config.yaml` file.
-
-### Detailed Breakdown of Files
-
-#### auth.py
-
-Handles Instagram authentication and session management:
-
-1. **Decryption of Credentials**:
-   - Decrypts stored Instagram credentials using a generated key.
-   
-2. **Login Management**:
-   - Manages login sessions, checking for an active session first and creating a new one if necessary.
-   - Uses `instagrapi` to handle the authentication process.
-   - Injects session IDs to the public session to maintain consistency.
-
-#### config_setup.py
-
-Generates the `config.yaml` configuration file with encrypted credentials. Also deletes any old status and log files to ensure a clean start.
-
-1. **Version Display**:
-   - Displays the current version of the program before starting the configuration process.
-
-2. **Generating Key**:
-   - Uses `cryptography.fernet.Fernet` to generate an encryption key.
-   
-3. **Encrypting Credentials**:
-   - Encrypts the Instagram username and password using the generated key.
-   
-4. **Getting User Inputs**:
-   - Prompts the user for various configuration details such as profiles to scrape, number of reels, intervals, proxy settings, default descriptions, and default comments.
-   
-5. **Creating and Saving Configuration**:
-   - Creates a YAML configuration file with all the provided details and encrypted credentials.
-   
-6. **Deleting Old Files**:
-   - Deletes old status and log files to ensure a clean setup.
-
-#### dashboard.py
-
-Displays a detailed dashboard of activities, showing the status of scraping, uploading, and human-like actions.
-
-1. **Version Display**:
-   - Displays the current version of the program on the dashboard.
-
-2. **Dashboard Information**:
-   - Displays the status of the last and next scrape, upload, and delete times.
-   - Shows random wait times and other detailed logs.
-
-#### input_helpers.py
-
-Contains helper functions for getting user inputs during configuration setup.
-
-1. **Input Functions**:
-   - Functions to get and validate different types of user inputs, such as integers, booleans, and strings.
-
-#### main.py
-
-The main script that orchestrates the scraping, uploading, and human-like actions processes. It reads the configuration, manages the workflow, and ensures periodic actions are performed.
-
-1. **Version Management**:
-   - Displays the current version of the program at startup.
-
-2. **Configuration and Initialization**:
-   - Reads the `config.yaml` file to get the configuration settings.
-   - Initializes logging and status files using utility functions from `utils.py`.
-
-3. **Authentication**:
-   - Uses `auth.py` to handle Instagram login. It checks for an existing session and uses it if available, otherwise, it performs a manual login and creates a new session, while keeping the UUIDs the same to reduce bot detection.
-
-4. **Scraping Logic**:
-   - Calls `scrape.py` to handle the scraping of Instagram reels.
-   - Performs human-like actions using the `perform_human_actions` function, including liking and commenting on posts to reduce bot detection.
-
-5. **Uploading Logic**:
-   - Handles the uploading of scraped reels, including adding descriptions, hashtags, and crediting the original posters. This logic is found in `upload.py`.
-
-6. **Logging and Random Waits**:
-   - Implements random waits between actions to mimic human behavior and avoid detection.
-   - Logs all activities for traceability and debugging purposes.
-
-7. **Error Handling**:
-   - Enhanced error handling to catch and log unexpected issues during execution.
-
-#### scrape.py
-
-Handles scraping of Instagram reels and performing human-like actions:
-
-1. **Scraping Functionality**:
-   - Scrapes reels from specified Instagram profiles.
-   - Implements human-like interactions such as liking and commenting on random posts from popular hashtags to mimic human behavior.
-
-2. **Human-like Actions**:
-   - The `perform_human_actions` function simulates human interactions by performing random actions during waiting periods, including liking and commenting on random posts.
-
-#### upload.py
-
-Handles the uploading of scraped reels:
-
-1. **Uploading Mechanism**:
-   - Uploads reels with customizable descriptions, hashtags, and credits.
-   - Supports adding reels to Instagram stories if configured.
-
-2. **Dashboard Integration**:
-   - The dashboard is now displayed after each upload to provide real-time feedback on the program's status.
-
-3. **Error Handling**:
-   - Improved error handling during the upload process to catch and log issues more effectively.
-
-#### utils.py
-
-Contains utility functions for logging, status management, random sleeps, and managing JSON files for random wait times:
-
-1. **Logging and Status Management**:
-   - Functions for reading and updating status files, logging uploads, and handling random wait times.
-
-2. **Random Sleeps**:
-   - Implements random wait periods between actions to reduce bot detection.
-   - Logs the random wait times to `random-waits.json`.
-
-3. **File Management**:
-   - Functions to delete old status and log files to ensure a clean setup.
-
-4. **Version Handling**:
-   - Manages the program version and displays it across the different scripts.
-
-### Anti-Bot Detection
-
-The program includes several features to avoid detection by Instagram:
-- **Random Waits**: Implements random waits between actions to mimic human behavior.
-- **Human-like Actions**: Performs random actions like liking, commenting, and following during the waiting periods.
-- **Detailed Logging**: Logs all activities for better traceability and debugging.
-
-### Logging
-
-The script maintains several log files to track activities and debug issues:
-
-- **upload_log.txt**: Keeps track of uploaded reels.
-- **status.json**: Tracks the last action times and other status information.
-- **random-upload-times.json**: Logs the random sleep times between uploads.
-- **random-waits.json**: Logs the random wait times between various actions.
-
-### Dashboard
-
-Run the dashboard script to view detailed information about scraping, uploading activities, and random wait times:
-
-```bash
-python dashboard.py
-```
-
-### License
-
-This project is licensed under the MIT License. See the LICENSE file for details.
-
-### Contributing
-
-Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
-
-### Disclaimer
-
-This script is intended for educational and personal use only. Use it responsibly and ensure you comply with Instagram’s terms of service and guidelines.
-
---- 
-
-This README reflects the new updates in version 3.02, including version management, enhanced error handling, and improved integration of the dashboard.
+- **Rate Limit Handling**: The program now has improved rate limit handling, but it's still possible to encounter rate limits if the bot is run too frequently. Adjust the scrape/upload intervals in `config.yaml` to mitigate this.
+- **Duplication Check**: The new status management should prevent duplicates in `reels_scraped`, but if you encounter any issues, ensure the status file is properly initialized and updated.
