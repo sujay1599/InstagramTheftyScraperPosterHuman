@@ -1,4 +1,4 @@
-import json  # <-- Add this line at the top of your file
+import json
 import logging
 import random
 import os
@@ -11,6 +11,7 @@ from default_comments import DEFAULT_COMMENTS
 console = Console()
 
 def perform_human_actions(client, tags):
+    """Perform human-like actions such as liking, following, and commenting on random media."""
     if not tags:
         console.print(f"[bold bright_red]No tags provided for human-like actions.[/bold bright_red]")
         return
@@ -79,6 +80,7 @@ def perform_human_actions(client, tags):
         logging.error(f"Failed to perform human-like actions: {e}")
 
 def scrape_reels(client, profile, num_reels, last_scrape_time, uploaded_reels, scraped_reels, tags):
+    """Scrape reels from the provided Instagram profile."""
     user_id = client.user_id_from_username(profile)
     reels = []
     new_scraped_reels = set(scraped_reels)  # Initialize as a set to avoid duplicates
@@ -99,7 +101,8 @@ def scrape_reels(client, profile, num_reels, last_scrape_time, uploaded_reels, s
                 reels.append(reel)
                 new_scraped_reels.add(profile_reel_id)  # Add to the set
 
-                if random.random() < 0.01:  # Perform human-like actions 1% of the time
+                # Perform human-like actions occasionally (1% of the time)
+                if random.random() < 0.01:
                     perform_human_actions(client, tags)
                 console.print(f"[bold bright_green]Scraped and saved reel: {profile_reel_id}.[/bold bright_green]")
                 
@@ -120,6 +123,7 @@ def scrape_reels(client, profile, num_reels, last_scrape_time, uploaded_reels, s
     return list(new_scraped_reels)  # Convert set to list for return
 
 def display_version_info():
+    """Display version info of the script."""
     try:
         with open('version.txt', 'r') as f:
             version_info = json.load(f)

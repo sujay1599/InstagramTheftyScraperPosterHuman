@@ -1,31 +1,8 @@
-import json
-
-def display_version_info():
-    try:
-        with open('version.txt', 'r') as f:
-            version_info = json.load(f)
-        
-        print("="*80)
-        print(f"Created by: {version_info['created_by']}")
-        print(f"Program: {version_info['program_name']}")
-        print(f"Version: {version_info['version']}")
-        print(f"Working as of: {version_info['working_as_of']}")
-        print("="*80)
-    except (FileNotFoundError, KeyError):
-        print("="*80)
-        print("Created by: Sujay1599")
-        print("Program: InstgramTheftyScraperPosterHuman")
-        print("Version: Unknown version")
-        print("Working as of: Unknown date")
-        print("="*80)
-
-        
 import os
 import json
 from rich.console import Console
 from rich.table import Table
 from datetime import datetime
-
 
 status_file = 'status.json'
 log_file = 'upload_log.txt'
@@ -35,6 +12,7 @@ downloads_dir = 'downloads'
 console = Console()
 
 def read_json_file(file_path):
+    """Read a JSON file and return its contents, or return an empty dictionary if the file doesn't exist or is corrupted."""
     if not os.path.exists(file_path):
         console.print(f"[bold red]{file_path} not found.[/bold red]")
         return {}
@@ -46,6 +24,7 @@ def read_json_file(file_path):
         return {}
 
 def read_text_file(file_path):
+    """Read a text file line by line, returning a list of lines or an empty list if the file doesn't exist or is corrupted."""
     if not os.path.exists(file_path):
         console.print(f"[bold red]{file_path} not found.[/bold red]")
         return []
@@ -57,6 +36,7 @@ def read_text_file(file_path):
         return []
 
 def get_file_counts():
+    """Return the count of total, uploaded, and unuploaded .mp4 files in the downloads directory, along with the folder size."""
     if not os.path.exists(downloads_dir):
         console.print("[bold red]Downloads directory not found.[/bold red]")
         return 0, [], 0, 0
@@ -68,6 +48,7 @@ def get_file_counts():
     return len(total_files), uploaded_files, len(unuploaded_files), folder_size
 
 def format_time(timestamp):
+    """Convert a timestamp to a readable format."""
     if not timestamp or timestamp == 'None':
         return "N/A"
     try:
@@ -76,6 +57,7 @@ def format_time(timestamp):
         return "Invalid timestamp"
 
 def display_dashboard():
+    """Display the status dashboard with file counts, upload stats, and random wait/upload times."""
     status = read_json_file(status_file)
     if not status:
         return

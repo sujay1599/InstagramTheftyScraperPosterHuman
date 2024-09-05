@@ -14,6 +14,7 @@ from auth import relogin  # Import the relogin function
 console = Console()
 
 def build_description(original_description, use_original, custom_description, use_hashtags, hashtags_list, give_credit, profile_username):
+    """Build the description for the reel, including hashtags and credit to the original profile."""
     description = random.choice(DEFAULT_DESCRIPTIONS) if not original_description else (
         original_description if use_original else custom_description or random.choice(DEFAULT_DESCRIPTIONS)
     )
@@ -27,6 +28,7 @@ def build_description(original_description, use_original, custom_description, us
     return description
 
 def load_uploaded_reels(log_filename):
+    """Load reels that have already been uploaded from the log file."""
     uploaded_reels = set()
     if os.path.exists(log_filename):
         with open(log_filename, 'r') as log_file:
@@ -34,6 +36,7 @@ def load_uploaded_reels(log_filename):
     return uploaded_reels
 
 def upload_reels_with_new_descriptions(client, config, unuploaded_reels, uploaded_reels, log_filename, session_file):
+    """Upload reels with new descriptions, handling re-login if necessary."""
     if not unuploaded_reels:
         console.print("[bold bright_red]No new reels to upload[/bold bright_red]")
         return
@@ -63,17 +66,22 @@ def upload_reels_with_new_descriptions(client, config, unuploaded_reels, uploade
         )
         logging.debug(f"Built new description for reel {reel_id}")
 
+        # Attempt to upload the reel
         if not upload_reel(client, config, media_path, new_description, profile_username, reel_id, log_filename, session_file):
             continue
 
+        # Optional story upload
         if config.get('uploading', {}).get('add_to_story', False):
             upload_to_story(client, media_path, new_description, profile_username, reel_id, config.get('uploading', {}).get('upload_interval_minutes', 10))
 
+        # Update the uploaded reels log
         update_uploaded_reels(log_filename, profile_username, reel_id)
 
+        # Perform random wait
         perform_random_wait(client, config, profile_username, reel_id)
 
 def read_description(description_path, reel_id):
+    """Read the original description from the description file."""
     if os.path.exists(description_path):
         with open(description_path, 'r', encoding='utf-8') as f:
             logging.debug(f"Read original description for reel {reel_id}")
@@ -81,6 +89,7 @@ def read_description(description_path, reel_id):
     return ""
 
 def upload_reel(client, config, media_path, new_description, profile_username, reel_id, log_filename, session_file, retries=3):
+    """Attempt to upload the reel, with retry logic in case of failure."""
     for attempt in range(retries):
         try:
             client.clip_upload(media_path, new_description)
@@ -118,6 +127,7 @@ def upload_reel(client, config, media_path, new_description, profile_username, r
     return False
 
 def upload_to_story(client, media_path, new_description, profile_username, reel_id, upload_interval_minutes):
+    """Upload a reel to the Instagram story."""
     try:
         console.print(f"[bold bright_green]Preparing to upload reel {reel_id} to story[/bold bright_green]")
         story_wait_time = random_sleep(60, 180, action="story upload", profile_reel_id=f"{profile_username}_{reel_id}")
@@ -130,11 +140,13 @@ def upload_to_story(client, media_path, new_description, profile_username, reel_
     subprocess.run(["python", "dashboard.py"])
 
 def update_uploaded_reels(log_filename, profile_username, reel_id):
+    """Log uploaded reels to the log file."""
     with open(log_filename, 'a') as log_file:
         log_file.write(f"{profile_username}_{reel_id}\n")
         logging.debug(f"Logged uploaded reel {profile_username}_{reel_id} to {log_filename}")
 
 def perform_random_wait(client, config, profile_username, reel_id):
+    """Perform random wait between uploads and human-like actions."""
     sleep_time = random_sleep(10, 60, action="next upload", profile_reel_id=f"{profile_username}_{reel_id}")
     sleep_with_progress_bar(sleep_time)
     log_random_upload_times(sleep_time, f"{profile_username}_{reel_id}")
@@ -165,6 +177,7 @@ def perform_random_wait(client, config, profile_username, reel_id):
             console.print(f"[bold blue3]Next upload at {(datetime.now() + timedelta(seconds=total_wait_time - elapsed_time)).strftime('%Y-%m-%d %H:%M:%S')}[/bold blue3]")
 
 def get_unuploaded_reels(downloads_dir, scraped_reels, uploaded_reels):
+    """Get the list of reels that have not been uploaded yet."""
     unuploaded_reels = []
     for filename in os.listdir(downloads_dir):
         if filename.endswith('.mp4'):

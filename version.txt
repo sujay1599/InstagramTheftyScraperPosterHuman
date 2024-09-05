@@ -1,6 +1,6 @@
 {
     "created_by": "Sujay1599",
     "program_name": "InstagramTheftyScraperPosterHuman",
-    "version": "3.1.1",
-    "working_as_of": "2024-08-22"
+    "version": "3.2.0",
+    "working_as_of": "2024-09-05"
 }

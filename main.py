@@ -3,8 +3,8 @@ import os
 import random
 import time
 from time import sleep as time_sleep
-from config_setup import load_config
-from auth import perform_login, update_session_file, decrypt_credentials, relogin, Client
+from config_setup import load_config  # This should now be correct in config_setup.py
+from auth import perform_login, update_session_file, decrypt_credentials, relogin, Client, inject_cookies
 from scrape import scrape_reels, perform_human_actions, display_version_info
 from upload import upload_reels_with_new_descriptions, get_unuploaded_reels, load_uploaded_reels
 from utils import initialize_status_file, read_status, update_status, random_sleep, log_random_upload_times, log_random_waits, initialize_json_file, sleep_with_progress_bar, delete_old_reels
@@ -25,7 +25,7 @@ def signal_handler(sig, frame):
     console.print("\n[bold red]KeyboardInterrupt detected! Exiting gracefully...[/bold red]")
     sys.exit(0)
 
-signal.signal(signal.SIGINT, signal_handler) 
+signal.signal(signal.SIGINT, signal_handler)
 
 # Ensure the downloads directory exists
 downloads_dir = 'downloads'
@@ -47,8 +47,13 @@ if not os.path.exists('random-waits.json'):
     logging.info("Created new random-waits.json file")
 
 # Load configuration
-config = load_config()
-logging.info("Loaded configuration")
+try:
+    last_username = input("Enter Instagram username for the session: ")
+    config = load_config(last_username)  # Use load_config to load the config file
+    logging.info(f"Loaded configuration for user: {last_username}")
+except FileNotFoundError as e:
+    console.print(f"[bold red]Error: {e}. Make sure to run config_setup.py first to generate the configuration file.[/bold red]")
+    sys.exit(1)
 
 # Validate configuration
 required_scraping_keys = ['profiles', 'num_reels', 'scrape_interval_minutes']
@@ -78,7 +83,11 @@ perform_login(cl, INSTAGRAM_USERNAME, INSTAGRAM_PASSWORD, session_file)
 update_session_file(cl, session_file)
 logging.info("Logged in to Instagram")
 
+# Inject cookies for public requests (if needed)
+inject_cookies(cl, session_file)
+
 def handle_rate_limit(client, func, *args, **kwargs):
+    """Handle rate limits and re-login if needed, with exponential backoff."""
     retries = 5
     for attempt in range(retries):
         try:
@@ -90,6 +99,7 @@ def handle_rate_limit(client, func, *args, **kwargs):
                 time_sleep(sleep_time)
                 relogin(client, INSTAGRAM_USERNAME, INSTAGRAM_PASSWORD, session_file)
             else:
+                logging.error(f"Error: {e}")
                 raise e
     raise Exception("Max retries exceeded")
 
