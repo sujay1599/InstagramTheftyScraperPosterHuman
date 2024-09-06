@@ -3,15 +3,17 @@ import os
 import random
 import time
 from time import sleep as time_sleep
-from config_setup import load_config  # This should now be correct in config_setup.py
-from auth import perform_login, update_session_file, decrypt_credentials, relogin, Client, inject_cookies
-from scrape import scrape_reels, perform_human_actions, display_version_info
+from tqdm import tqdm
+from config_setup import load_config
+from auth import perform_login, update_session_file, decrypt_credentials, relogin, Client
+from scrape import scrape_reels, perform_human_actions
 from upload import upload_reels_with_new_descriptions, get_unuploaded_reels, load_uploaded_reels
 from utils import initialize_status_file, read_status, update_status, random_sleep, log_random_upload_times, log_random_waits, initialize_json_file, sleep_with_progress_bar, delete_old_reels
 import subprocess
 from rich.console import Console
 import signal
 import sys
+import traceback
 
 console = Console()
 
@@ -20,8 +22,8 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
-# Signal handler to catch keyboard interrupts
 def signal_handler(sig, frame):
+    """Handle keyboard interrupts and perform graceful shutdown."""
     console.print("\n[bold red]KeyboardInterrupt detected! Exiting gracefully...[/bold red]")
     sys.exit(0)
 
@@ -47,13 +49,8 @@ if not os.path.exists('random-waits.json'):
     logging.info("Created new random-waits.json file")
 
 # Load configuration
-try:
-    last_username = input("Enter Instagram username for the session: ")
-    config = load_config(last_username)  # Use load_config to load the config file
-    logging.info(f"Loaded configuration for user: {last_username}")
-except FileNotFoundError as e:
-    console.print(f"[bold red]Error: {e}. Make sure to run config_setup.py first to generate the configuration file.[/bold red]")
-    sys.exit(1)
+config = load_config()
+logging.info("Loaded configuration")
 
 # Validate configuration
 required_scraping_keys = ['profiles', 'num_reels', 'scrape_interval_minutes']
@@ -77,46 +74,41 @@ proxy = config.get('proxy')
 if proxy:
     cl.set_proxy(proxy)
 
-# Perform initial login
+# Perform initial login with 2FA handling
 session_file = os.path.join('user_sessions', f"{INSTAGRAM_USERNAME}_session.json")
-perform_login(cl, INSTAGRAM_USERNAME, INSTAGRAM_PASSWORD, session_file)
+if not perform_login(cl, INSTAGRAM_USERNAME, INSTAGRAM_PASSWORD, session_file):
+    console.print("[bold red]Login failed. Exiting...[/bold red]")
+    sys.exit(1)
+
 update_session_file(cl, session_file)
 logging.info("Logged in to Instagram")
 
-# Inject cookies for public requests (if needed)
-inject_cookies(cl, session_file)
-
 def handle_rate_limit(client, func, *args, **kwargs):
-    """Handle rate limits and re-login if needed, with exponential backoff."""
+    """Handle rate limit and login required scenarios with retries."""
     retries = 5
     for attempt in range(retries):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            if '429' in str(e) or 'login_required' in str(e):  # Rate limit or login required error
+            if '429' in str(e) or 'login_required' in str(e):
                 sleep_time = min(2 ** attempt, 3000)  # Exponential backoff up to 5 minutes
                 console.print(f"Rate limit or login required. Retrying in {sleep_time} seconds...")
                 time_sleep(sleep_time)
-                relogin(client, INSTAGRAM_USERNAME, INSTAGRAM_PASSWORD, session_file)
+                if not relogin(client, session_file):
+                    console.print("[bold red]Re-login failed. Exiting...[/bold red]")
+                    sys.exit(1)
             else:
-                logging.error(f"Error: {e}")
                 raise e
     raise Exception("Max retries exceeded")
 
-# Main loop
 def main():
+    """Main function that handles scraping, uploading, and other bot tasks."""
     try:
-        display_version_info()  # Display version control information
-
-        # Load status
         status = read_status()
-
-        # Set initial values for the main loop
         last_upload_time = status.get('last_upload_time', 0)
         last_scrape_time = status.get('last_scrape_time', 0)
-        reels_scraped = set(status.get('reels_scraped', []))  # Use set to ensure uniqueness
+        reels_scraped = status.get('reels_scraped', [])
 
-        # Define tags from the configuration
         tags = config.get('custom_tags', [])
         default_comments = config.get('comments', [])
         default_descriptions = config.get('description', {}).get('custom_descriptions', [])
@@ -124,16 +116,15 @@ def main():
         while True:
             current_time = time.time()
 
-            # Check if it's time to scrape reels
             if current_time - last_scrape_time >= config['scraping']['scrape_interval_minutes'] * 60:
                 try:
                     profiles = config['scraping']['profiles'].split()
                     uploaded_reels = load_uploaded_reels('upload_log.txt')
                     for profile in profiles:
                         try:
-                            scraped_reels = handle_rate_limit(cl, scrape_reels, cl, profile, config['scraping']['num_reels'], last_scrape_time, uploaded_reels, list(reels_scraped), tags)
-                            reels_scraped.update(scraped_reels)  # Update set with new scraped reels
-                            update_status(last_scrape_time=current_time, reels_scraped=list(reels_scraped))  # Convert back to list for JSON
+                            scraped_reels = handle_rate_limit(cl, scrape_reels, cl, profile, config['scraping']['num_reels'], last_scrape_time, uploaded_reels, reels_scraped, tags)
+                            reels_scraped.extend(scraped_reels)
+                            update_status(last_scrape_time=current_time, reels_scraped=reels_scraped)
                             logging.info("Updated status after scraping")
                         except Exception as e:
                             logging.error(f"Error scraping profile {profile}: {e}")
@@ -148,7 +139,7 @@ def main():
 
             # Check if it's time to upload reels
             uploaded_reels = load_uploaded_reels('upload_log.txt')
-            unuploaded_reels = get_unuploaded_reels('downloads', list(reels_scraped), uploaded_reels)
+            unuploaded_reels = get_unuploaded_reels('downloads', reels_scraped, uploaded_reels)
 
             if current_time - last_upload_time >= config['uploading']['upload_interval_minutes'] * 60:
                 try:
@@ -172,7 +163,7 @@ def main():
 
             # Delete old reels based on the deletion interval
             try:
-                delete_old_reels(config['deleting']['delete_interval_minutes'], config)
+                delete_old_reels(config['deleting']['delete_interval_minutes'], config)  # Pass config as argument
             except Exception as e:
                 logging.error(f"Error in deletion process: {e}")
                 console.print(f"[bold red]Error in deletion process: {e}[/bold red]")
@@ -185,6 +176,7 @@ def main():
     except Exception as e:
         logging.error(f"Unexpected error: {e}")
         console.print(f"[bold red]Unexpected error: {e}[/bold red]")
+        traceback.print_exc()
 
 if __name__ == "__main__":
     main()

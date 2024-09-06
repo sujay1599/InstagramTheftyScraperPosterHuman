@@ -1,19 +1,21 @@
+import os
+import getpass
 import yaml
 from cryptography.fernet import Fernet
-import getpass
-import os
+from instagrapi import Client
+from auth import perform_login, encrypt_credentials, generate_key, save_session, load_session
 from input_helpers import get_input, get_boolean_input
-from instagrapi import Client  # Correct import of Client class
-from auth import perform_login, decrypt_credentials  # Import functions from auth.py
-from default_comments import DEFAULT_COMMENTS
-from default_descriptions import DEFAULT_DESCRIPTIONS
 from rich.console import Console
 
-console = Console()
-
-# Constants
 SESSION_DIR = 'user_sessions'
 CONFIG_FILE = 'config.yaml'
+console = Console()
+
+# Ensure the session directory exists
+if not os.path.exists(SESSION_DIR):
+    os.makedirs(SESSION_DIR)
+    console.print(f"[bold green]Created directory for user sessions: {SESSION_DIR}[/bold green]")
+
 DEFAULT_TAGS = [
     'instagram', 'instadaily', 'LikeForLike', 'FollowForFollow', 'viral',
     'trending', 'explorepage', 'love', 'photooftheday', 'instagood',
@@ -27,41 +29,19 @@ DEFAULT_TAGS = [
     'wanderlust', 'model', 'india', 'usa', 'goals'
 ]
 
-# Ensure the session directory exists
-if not os.path.exists(SESSION_DIR):
-    os.makedirs(SESSION_DIR)
-    console.print(f"[bold green]Created directory for user sessions: {SESSION_DIR}[/bold green]")
-
-def generate_key():
-    return Fernet.generate_key()
-
-def encrypt_credentials(username, password, key):
-    cipher_suite = Fernet(key)
-    encrypted_username = cipher_suite.encrypt(username).decode()
-    encrypted_password = cipher_suite.encrypt(password).decode()
-    return encrypted_username, encrypted_password
-
 def get_user_credentials():
-    """Prompt the user for Instagram credentials and validate by attempting login."""
+    """Prompt the user for Instagram credentials and return them."""
     while True:
         username = input('Enter Instagram username: ').encode()
         password = getpass.getpass('Enter Instagram password: ').encode()
-        
-        # Check if the user has 2FA enabled
-        two_fa_enabled = get_boolean_input('Is 2FA enabled on this account? (true/false): ')
-        verification_code = None
-        if two_fa_enabled:
-            verification_code = input('Enter the 2FA verification code: ')
-
-        # Initialize the Client object
         client = Client()
-        client.delay_range = [1, 3]  # Mimic human behavior with delays between requests
         session_file = os.path.join(SESSION_DIR, f"{username.decode()}_session.json")
+        client.delay_range = [1, 3]  # Mimic human behavior with delays between requests
 
-        # Use perform_login function from auth.py to attempt login and manage session
-        if perform_login(client, username.decode(), password.decode(), session_file, verification_code):
+        # Attempt to login
+        if perform_login(client, username.decode(), password.decode(), session_file):
             console.print("[bold green]Login successful![/bold green]")
-            return username, password, two_fa_enabled
+            return username, password, client.two_factor_auth_required
         else:
             console.print("[bold red]Login failed. Please try again.[/bold red]")
 
@@ -144,29 +124,15 @@ def save_config(config, filename=CONFIG_FILE):
         yaml.dump(config, file)
     console.print(f"[bold green]Configuration saved to {filename}[/bold green]")
 
-def delete_files(files):
-    """Delete specified files if they exist."""
-    for file in files:
-        if os.path.exists(file):
-            os.remove(file)
-            console.print(f"[bold yellow]Deleted {file}[/bold yellow]")
-
-def load_config(config_file=CONFIG_FILE):
-    """Load configuration from a YAML file."""
-    with open(config_file, 'r') as file:
-        return yaml.safe_load(file)
-
 def main():
-    """Main function to generate configuration and manage session files."""
     key = generate_key()
     username, password, two_fa_enabled = get_user_credentials()
-    encrypted_username, encrypted_password = encrypt_credentials(username, password, key)
+
+    encrypted_username, encrypted_password = encrypt_credentials(username.decode(), password.decode(), key)
     
     config = create_config(encrypted_username, encrypted_password, key)
     config['instagram']['original_username'] = username.decode()  # Add original username to config
     save_config(config)
-
-    delete_files(['status.json', 'last_scraped_timestamp.txt', 'random-upload-times.json', 'random-waits.json'])
 
 if __name__ == "__main__":
     main()

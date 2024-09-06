@@ -4,13 +4,6 @@ from rich.console import Console
 from rich.table import Table
 from datetime import datetime
 
-print("="*80)
-print("Created by: Sujay1599")
-print("Program: InstgramTheftyScraperPosterHuman")
-print("Version:2.2")
-print("Working as of: 7/28/2024")
-print("="*80)
-
 status_file = 'status.json'
 log_file = 'upload_log.txt'
 random_upload_time_file = 'random-upload-times.json'
@@ -19,6 +12,7 @@ downloads_dir = 'downloads'
 console = Console()
 
 def read_json_file(file_path):
+    """Read a JSON file and return its contents, or return an empty dictionary if the file doesn't exist or is corrupted."""
     if not os.path.exists(file_path):
         console.print(f"[bold red]{file_path} not found.[/bold red]")
         return {}
@@ -30,6 +24,7 @@ def read_json_file(file_path):
         return {}
 
 def read_text_file(file_path):
+    """Read a text file line by line, returning a list of lines or an empty list if the file doesn't exist or is corrupted."""
     if not os.path.exists(file_path):
         console.print(f"[bold red]{file_path} not found.[/bold red]")
         return []
@@ -41,6 +36,7 @@ def read_text_file(file_path):
         return []
 
 def get_file_counts():
+    """Return the count of total, uploaded, and unuploaded .mp4 files in the downloads directory, along with the folder size."""
     if not os.path.exists(downloads_dir):
         console.print("[bold red]Downloads directory not found.[/bold red]")
         return 0, [], 0, 0
@@ -52,6 +48,7 @@ def get_file_counts():
     return len(total_files), uploaded_files, len(unuploaded_files), folder_size
 
 def format_time(timestamp):
+    """Convert a timestamp to a readable format."""
     if not timestamp or timestamp == 'None':
         return "N/A"
     try:
@@ -60,6 +57,7 @@ def format_time(timestamp):
         return "Invalid timestamp"
 
 def display_dashboard():
+    """Display the status dashboard with file counts, upload stats, and random wait/upload times."""
     status = read_json_file(status_file)
     if not status:
         return
