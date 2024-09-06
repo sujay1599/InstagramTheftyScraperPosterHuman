@@ -120,6 +120,7 @@ def handle_rate_limit(client, func, *args, **kwargs):
     raise Exception("Max retries exceeded")
 
 # Main loop
+# Main loop
 def main():
     try:
         # Load status
@@ -166,7 +167,7 @@ def main():
 
             if current_time - last_upload_time >= config['uploading']['upload_interval_minutes'] * 60:
                 try:
-                    handle_rate_limit(cl, upload_reels_with_new_descriptions, cl, config, unuploaded_reels, uploaded_reels, 'upload_log.txt')
+                    handle_rate_limit(cl, upload_reels_with_new_descriptions, cl, config, unuploaded_reels, uploaded_reels, 'upload_log.txt', session_file)
                     update_status(last_upload_time=current_time)
                     console.print("[bold purple4]Finished uploading reels[/bold purple4]")
 
