@@ -1,0 +1,46 @@
+custom_tags:
+- 1min
+- LongerVideos
+- swifttok
+- FallGuysMoments
+- MakeupInspo
+- PaTiChallenge
+- ForYourPride
+- ohno
+- anime
+- FilmTok
+- Fashionista
+- ShoppingTherapy
+- BeautyDay
+- SportsPhotography
+- EntertainmentNews
+- GreenEnergy
+- EcoFriendly
+- MentalHealthMatters
+- DigitalArt
+- TravelGoals
+deleting:
+  delete_interval_minutes: 900000
+description:
+  credit:
+    give_credit: false
+  custom_description: ''
+  hashtags:
+    use_hashtags: false
+  use_original: false
+instagram:
+  password: USERNAME
+  username: PASSWORD
+key: 4m5-343453145358231=
+leave_comment: false
+proxy: ''
+scraping:
+  enabled: true
+  like_reels: false
+  num_reels: 3
+  profiles: fatboydegen69 sanitypun terrible_christian_memer
+  scrape_interval_minutes: 60000
+uploading:
+  add_to_story: false
+  enabled: false
+  upload_interval_minutes: 24
