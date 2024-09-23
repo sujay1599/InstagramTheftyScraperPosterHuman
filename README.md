@@ -1,116 +1,109 @@
-# InstagramTheftyScraperPosterHuman - Version 3.2.0
+# InstagramTheftyScraperPosterHuman - Version 3.2.1
 
 ## Overview
 
-InstagramTheftyScraperPosterHuman is a bot designed to automate the scraping, posting, and management of Instagram reels with added functionality to mimic human-like actions. It allows users to scrape reels from various profiles, upload them with custom descriptions and tags, and even simulate interactions such as liking, following, and commenting.
+**InstagramTheftyScraperPosterHuman** is a bot designed for automating the scraping, posting, and management of Instagram reels with added features to simulate human-like actions. This tool enables scraping reels from specified Instagram profiles, uploading them with customizable descriptions and hashtags, and mimicking real user behaviors like liking, following, and commenting on posts.
 
-This project focuses on automation while implementing safety measures like random actions and delays to prevent detection by Instagram’s anti-bot mechanisms.
+## Version 3.2.1 - September 23rd, 2024
 
-## Version 3.2.0 - September 5, 2024
+### Key Features and Enhancements
 
-### New Features and Enhancements
+1. **Version Control and Cleanup**:
+   - The bot now reflects version **3.2.1**, which includes cleaning up `default_comments.py` and `default_description.py`.
 
-1. **Version Control Integration**
-   - Added a `version.txt` file to manage version control, allowing the program to display information such as the creator, version number, and the last known working date at startup.
-   - Example format for `version.txt`:
-     ```json
-     {
-         "created_by": "Sujay1599",
-         "program_name": "InstagramTheftyScraperPosterHuman",
-         "version": "3.2.0",
-         "working_as_of": "2024-09-05"
-     }
-     ```
+2. **Session and Configuration Management**:
+   - Sessions and configuration files are stored in dedicated directories (`user_sessions/` and `configs/`), making multi-account management seamless.
+   - Credentials are securely encrypted using **Fernet** encryption and saved in YAML configuration files.
 
-2. **Load Configuration Based on User Session**
-   - New configuration loading based on the last username entered in the session, allowing for multi-account management with individual `config.yaml` files.
+3. **Human-Like Behavior Simulation**:
+   - Refined human-like behaviors such as random interactions (likes, comments, follows) to avoid detection.
+   - Reels are scraped at intervals, with human-like delays and randomized actions, simulating natural usage patterns.
 
-3. **Improved Cookie Injection**
-   - Enhanced the cookie injection feature during Instagram login to avoid public request failures. Cookies from the session file are now properly loaded and injected to support public requests.
+4. **Rate Limit Handling**:
+   - Enhanced handling of Instagram rate limits and re-logins when required. The bot employs exponential backoff and session re-authentication to ensure stable performance.
 
-4. **Human-like Behavior Simulation**
-   - Refined the `perform_human_actions()` function to include randomized human-like behaviors such as liking, following/unfollowing, and commenting on posts.
-   - Improved the `random_sleep()` function to log wait times, adding more randomness and realism to the bot's actions.
+5. **File Management and Logging**:
+   - All relevant logs (e.g., scraping and uploading activities) are saved in `config_setup.log`, making it easier to debug and track the bot's actions.
+   - Improved management of session cookies and automatic initialization of necessary JSON files (`status.json`, `random-upload-times.json`).
 
-5. **Enhanced Error Handling and Logging**
-   - Added comprehensive logging across all functions to track execution, errors, and specific actions like waits and deletions.
-   - Improved error handling in functions like `scrape_reels()` and `handle_rate_limit()` to manage issues like rate limits and failed scrapes/upload attempts gracefully.
+6. **Scraping and Uploading**:
+   - **Scrape reels**: Reels are scraped from profiles at user-defined intervals. New scraping methods ensure no duplicates and better media handling.
+   - **Uploading reels**: The bot now uploads reels with customizable descriptions, hashtags, and optional Instagram Story uploads.
 
-6. **Progress Feedback**
-   - Integrated a progress bar during sleep intervals with the `sleep_with_progress_bar()` function to provide visual feedback during long-running operations.
-
-7. **File Management and Initialization**
-   - Implemented automatic initialization for JSON files such as `status.json` using `initialize_json_file()` and `initialize_status_file()` to ensure they are properly set up with default values.
-   - Enhanced file cleanup with functions like `delete_old_reels()` and `delete_uploaded_files()` to manage storage efficiently by deleting old or unnecessary files.
-
-8. **Session and Configuration File Management**
-   - Session files are now saved in the `user_sessions` directory, allowing each user to have a separate session file that maintains their login state.
-   - Configuration files (`config.yaml`) are saved in the `configs` directory, allowing for easy management of multiple configurations for different users.
-   - The `config_setup.log` file tracks all activities during the configuration process, including login attempts and encryption key generation.
+7. **Dashboard**:
+   - The bot includes a dashboard that provides real-time updates on scraping, uploading, and bot status.
 
 ---
 
-### Why Version 3.2.0 is Better Than the Previous Versions
+## Why Version 3.2.1 is Better Than 3.2.0
 
-#### 1. **Enhanced User Experience for Multi-Account Management**
-   - Version 3.2.0 introduces individual `config.yaml` files and session files per user, simplifying multi-account management. Users can now manage multiple Instagram accounts more efficiently, without mixing up configurations or login states.
-   - Each user’s session is preserved in the `user_sessions` directory, and configuration files are saved in the `configs` directory. This was not available in previous versions, making this release far more flexible for users who manage multiple accounts.
+1. **Streamlined Codebase**:
+   - In version **3.2.1**, we cleaned up `default_comments.py` and `default_description.py`, removing unnecessary comments and redundant code. This results in a more efficient and easier-to-maintain codebase.
 
-#### 2. **Improved Stability with Cookie Injection**
-   - The new cookie injection system reduces public request failures that were an issue in earlier versions. By injecting cookies from the session file into the client, the bot can maintain the session across both private and public requests, leading to a smoother experience and fewer login issues.
-   - This enhancement reduces the frequency of re-authentication attempts, significantly improving the bot’s stability and reliability compared to older versions.
+2. **Improved Human-like Actions**:
+   - Version **3.2.1** introduced more randomized human-like actions, making the bot’s behavior even more realistic. The updated `scrape.py` ensures that actions like liking, following, and commenting are more randomized, reducing the chances of detection.
 
-#### 3. **Better Rate Limit Handling**
-   - Version 3.2.0 includes refined rate limit handling, allowing the bot to handle Instagram’s rate limits more gracefully. Instead of stopping the bot after a rate limit hit, the program now backs off with exponential delays and retries, reducing the chances of being blocked.
-   - Previous versions were less capable of handling rate limits effectively, which could lead to unexpected crashes or blocked accounts.
+3. **Better Error Handling**:
+   - The latest version includes improved error handling during scraping and uploading processes. Errors are now logged more clearly, and the bot retries certain actions before giving up, enhancing stability.
 
-#### 4. **More Realistic Human-Like Behavior**
-   - Human-like actions such as liking, following, and commenting are much more randomized and realistic in this version. The improved `perform_human_actions()` function simulates real user interactions better, further lowering the bot’s detectability.
-   - This new version adds a layer of protection against Instagram’s anti-bot measures that older versions lacked, making it safer to use.
+4. **Enhanced Session Management**:
+   - Updates in `auth.py` and `config_setup.py` have improved session management. Now, the bot better handles session cookies, ensuring that session information is retained between restarts. Re-login functionality has also been enhanced to prevent disruptions caused by expired sessions.
 
-#### 5. **Progress and Feedback Improvements**
-   - A new progress bar feature during long-running sleep intervals provides users with visual feedback, making it easier to monitor the bot’s actions in real-time. This feature was not present in earlier versions, enhancing the overall user experience.
-   - Additionally, comprehensive logging provides more transparency into the bot’s internal operations, making it easier for users to debug issues or understand the bot’s actions.
+5. **Rate Limit Handling**:
+   - The new version refines rate limit handling, ensuring smoother operations even when Instagram enforces rate limits. With exponential backoff and retry mechanisms, **3.2.1** is more robust in handling rate-limited scenarios.
 
-#### 6. **File Management and Cleanup**
-   - The new version offers better file management, with automatic initialization for crucial files (`status.json`, `random-waits.json`, `random-upload-times.json`). Old or unnecessary media files are also deleted automatically, ensuring the program runs efficiently without accumulating excess storage.
-   - Version 3.2.0 manages these files far more effectively compared to previous versions, where manual intervention was often required.
+6. **Configurable Deletion Intervals**:
+   - Version **3.2.1** provides more flexibility with the option to configure reel deletion intervals, ensuring that old reels are deleted on time, keeping storage usage under control.
+
+7. **Optimized Uploading Logic**:
+   - The bot now incorporates retries during reel uploads in case of failure. With the improved `upload.py`, re-login attempts are made seamlessly when required, reducing downtime caused by session expiration.
+
+8. **User Experience and Feedback**:
+   - Visual feedback during scraping, uploading, and random wait periods has been improved. The progress bar feature now gives users a clearer idea of the bot’s current actions and status, making it more user-friendly.
 
 ---
 
-### Installation
+## Installation
 
-#### Prerequisites
+### Prerequisites
+
 - **Python 3.9+**
 - **pip** (Python package manager)
 
-#### 1. Clone the Repository:
+### 1. Clone the Repository
+
 ```bash
 git clone https://github.com/sujay1599/InstagramTheftyScraperPosterHuman.git
 cd InstagramTheftyScraperPosterHuman
 ```
 
-#### 2. Install the Required Packages:
+### 2. Install Required Packages
+
 ```bash
 pip install -r requirements.txt
 ```
 
-#### 3. Run the Configuration Setup:
-To generate the `config.yaml` file, run:
+### 3. Run the Configuration Setup
+
 ```bash
 python config_setup.py
 ```
-Follow the prompts to enter your configuration details. This will generate a `config.yaml` file with the necessary settings, including encrypted Instagram credentials, proxy settings, default descriptions, and comments.
 
-### Configuration
+The setup process will guide you through entering your Instagram credentials and configuring scraping, uploading, and other settings.
 
-The `config.yaml` file will be generated by running `config_setup.py`. It includes the following settings:
+### 4. Run the Bot
 
-- **Session files**: Stored in the `user_sessions` directory. Each session is saved with the username as the filename.
-- **Configuration files**: Stored in the `configs` directory. Each user's configuration file is saved under their username.
-- **Log file**: Configuration activities are logged in the `config_setup.log` file for debugging and tracking purposes.
+Once the configuration is complete, you can run the bot:
 
-Here’s an example of what the `config.yaml` file might look like:
+```bash
+python main.py
+```
+
+## Configuration
+
+The bot’s configuration is stored in a `USERNAME_config.yaml` file, generated after running the `config_setup.py` script. This file holds settings for Instagram credentials, scraping, uploading, descriptions, and more.
+
+### Example `USERNAME_config.yaml`:
 
 ```yaml
 instagram:
@@ -132,88 +125,45 @@ description:
   custom_descriptions:
     - "Custom description 1"
     - "Custom description 2"
-    - "Custom description 3"
 hashtags:
   use_hashtags: true
-  hashtags_list: "example hashtags"
+  hashtags_list: "#hashtag1 #hashtag2"
 credit:
   give_credit: true
 leave_comment: true
 comments:
   - "Nice reel!"
   - "Great post!"
-  - "Awesome!"
-  - "Love it!"
 deleting:
   delete_interval_minutes: 1440
 custom_tags:
-  - instagram
-  - instadaily
-  - LikeForFollow
-  - LikesForLikes
-  - LikeForLikes
-  - FollowForFollow
-  - LikeForLike
-  - FollowForFollowBack
-  - FollowBack
-  - FollowMe
-proxy: http://proxyserver:port # Add your proxy address here if you use one
+  - tag1
+  - tag2
+proxy: http://proxyserver:port  # Optional: Add your proxy server address
 ```
 
-### How to Update to Version 3.2.0
+## Logging
 
-1. **Re-clone the Repository**  
-   Pull the latest version of the program by re-cloning the repository:
-   ```bash
-   git clone https://github.com/sujay1599/InstagramTheftyScraperPosterHuman.git
-   cd InstagramTheftyScraperPosterHuman
-   ```
+Logs are saved in the `config_setup.log` file and include:
 
-2. **Validate the Update**  
-   After cloning, check the `version.txt` file to ensure you are using the latest version:
-   ```bash
-   cat version.txt
-   ```
+- Login attempts and results.
+- Reels scraped and uploaded.
+- Any errors encountered during scraping or uploading.
 
-   The file should contain:
-   ```json
-   {
-       "created_by": "Sujay1599",
-       "program_name": "InstagramTheftyScraperPosterHuman",
-       "version": "3.2.0",
-       "working_as_of": "2024-09-05"
-   }
-   ```
+## CLI Arguments
 
-3. **Review and Update `config.yaml`**  
-   Ensure your `config.yaml` file is updated and configured to your requirements. You can generate a new one if needed by running:
-   ```bash
-   python config_setup.py
-   ```
+You can reuse an existing configuration by passing the `--reuse-config` argument:
 
-4. **Run the Program**  
-   After validating the update and configuring settings, run the program as usual to start using the new features:
-   ```bash
-   python
+```bash
+python config_setup.py --reuse-config
+```
 
- main.py
-   ```
+This will load an existing configuration if available, allowing for faster setup.
 
-### Known Issues
+## License
 
-- **Rate Limit Handling**: The program now has improved rate limit handling, but it’s still possible to encounter rate limits if the bot is run too frequently. Adjust the scrape/upload intervals in `config.yaml` to mitigate this.
-- **Duplication Check**: The new status management should prevent duplicates in `reels_scraped`, but if you encounter any issues, ensure the status file is properly initialized and updated.
+This project is licensed under the MIT License. See the `LICENSE` file for more information.
 
-### File Management Locations
+## Contact
 
-- **Session Files**: `user_sessions/` directory. Each user’s session file is named after their Instagram username.
-- **Configuration Files**: `configs/` directory. Each user’s configuration file is saved under their username.
-- **Log Files**: `config_setup.log` is created in the root directory to track configuration activities.
-
-### License
-
-This project is licensed under the MIT License.
-
-### Contact
-For any issues or contributions, feel free to contact the creator:  
-**Sujay1599** - sujay1599@github.com
+For any issues or contributions, feel free to msg me!

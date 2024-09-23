@@ -1,109 +1,21 @@
 # default_descriptions.py
+# User can update the default descriptions here.
+# this is a list of default descriptions that can be used when generating captions for posts when choosing not to use the original descriptio during config_setup.py
+# The user can update this list with their own descriptions or use the default ones provided from the scraped video! 
 
-
-
+# Default descriptions for posts
 DEFAULT_DESCRIPTIONS = [
-"""
-The 2021 Honda Civic is a reliable compact car 🚗 known for its fuel efficiency and practicality. It typically comes with a 2.0-liter four-cylinder engine or an optional 1.5-liter turbocharged engine, offering a good balance of power and efficiency.
-
-The standard engine produces around 158 horsepower, while the turbocharged one boosts it up to 174 horsepower. The top speed of the Civic varies depending on the engine and trim level, but it generally ranges from 115 to 130 mph. The 0-60 mph acceleration time for the Civic is approximately 7-8 seconds, depending on the engine choice.
-
-Inside, the Civic boasts a comfortable and well-equipped cabin with plenty of standard and available features. These include a user-friendly infotainment system with smartphone integration, advanced safety features like Honda Sensing, and a spacious interior with ample legroom and cargo space.
-
-Overall, the 2021 Honda Civic offers a blend of reliability, efficiency, and practicality that appeals to a wide range of drivers.
-
-""",
-
-"""No problem! Here’s the information about the Mercedes CLR GTR:
-RUN AROUND 10-5 MILES
-
-The Mercedes CLR GTR is a remarkable racing car celebrated for its outstanding performance and sleek design. Powered by a potent 6.0-liter V12 engine, it delivers over 600 horsepower.
-
-Acceleration from 0 to 100 km/h takes approximately 3.7 seconds, with a remarkable top speed surpassing 320 km/ h.
-
-Incorporating advanced aerodynamic features and cutting-edge stability technologies, the CLR GTR ensures exceptional stability and control, particularly
-during high-speed maneuvers.
-
-Originally priced around $1.5 million, the Mercedes CLR GTR is considered one of the most exclusive and prestigious racing cars ever produced.
-""",
-"""Here's a classic chocolate chip cookie recipe:
-
-Ingredients:
-- 1 cup (2 sticks) unsalted butter, softened
-- 3/4 cup granulated sugar
-- 3/4 cup packed brown sugar
-- 2 large eggs
-- 1 teaspoon vanilla extract
-- 2 1/4 cups all-purpose flour
-- 1 teaspoon baking soda
-- 1/2 teaspoon salt
-- 2 cups semisweet chocolate chips
-
-Instructions:
-1. Preheat your oven to 375°F (190°C). Line baking sheets with parchment paper.
-2. In a large mixing bowl, cream together the butter, granulated sugar, and brown sugar until light and fluffy.
-3. Beat in the eggs, one at a time, then stir in the vanilla extract.
-4. In a separate bowl, combine the flour, baking soda, and salt. Gradually add the dry ingredients to the wet ingredients and mix until well combined.
-5. Fold in the chocolate chips until evenly distributed throughout the dough.
-6. Drop rounded tablespoons of dough onto the prepared baking sheets, leaving space between each cookie.
-7. Bake in the preheated oven for 8 to 10 minutes, or until the edges are golden brown.
-8. Allow the cookies to cool on the baking sheets for a few minutes before transferring them to wire racks to cool completely.
-
-Enjoy your delicious homemade chocolate chip cookies!""",
-""" 
-No problem! Here's the information about the Mercedes CLR GTR:
-
-The Mercedes CLR GTR is a remarkable racing car celebrated for its outstanding performance and sleek design. Powered by a potent 6.0-liter V12 engine, it delivers over 600 horsepower.
-
-🔧
-
-Acceleration from 0 to 100 km/h takes approximately 3.7 seconds, with a remarkable top speed surpassing 320 km/h.
-
-Incorporating advanced aerodynamic features and cutting-edge stability technologies, the CLR GTR ensures exceptional stability and control, particularly during high-speed maneuvers. 💨
-
-Originally priced around $1.5 million, the Mercedes CLR GTR is considered one of the most exclusive and prestigious racing cars ever produced. 💰
-
-Its limited production run of just five units adds to its rarity, making it highly sought after by racing enthusiasts and collectors worldwide. 🌎
-Want to earn a million in 2024?
-Dive into these 5 captivating remote business opportunities that promise excitement and potential:
-
-Freelancing & Consulting:
-
-• Dive into the world of Content Writing
-• Craft Compelling Copywriting
-• Unleash Creative Genius in Graphic Design
-• Build Memorable Brands with Branding Services
-
-E-commerce & Dropshipping:
-
-• Embark on the Adventure of Online Store Launching
-• Revolutionize Sales with Inventory-Free Dropshipping
-
-Online Coaching & Courses:
-
-• Share Your Passion and Expertise through Online Coaching
-• Create Transformative Courses that Resonate with Audiences""",
-"""Earning a million dollars in 2024 is a challenging but achievable goal. Here are several strategies to consider:
-
-1. **Start a High-Growth Business**: Launching a tech startup or a business in a high-growth industry can offer significant returns if you can scale quickly and capture market share.
-
-2. **Invest in the Stock Market**: Strategic investing in stocks, particularly growth stocks or emerging industries, can yield substantial returns. Consider diversifying your portfolio and staying informed about market trends.
-
-3. **Real Estate Investments**: Investing in real estate properties, particularly in growing markets or through real estate investment trusts (REITs), can generate significant returns through appreciation and rental income.
-
-4. **Develop a Scalable Online Business**: Creating an online business, such as an e-commerce store, digital product, or subscription service, can reach a broad audience and scale quickly.
-
-5. **Cryptocurrency and Blockchain**: Investing in cryptocurrencies or blockchain projects can be highly profitable, though it comes with higher risk and volatility.
-
-6. **Innovate and Monetize Intellectual Property**: Developing a new product, technology, or content that can be patented or licensed could provide substantial revenue.
-
-7. **High-Income Careers**: Pursuing high-paying careers in finance, technology, or other lucrative fields, combined with strategic savings and investments, can accumulate wealth over time.
-
-8. **Leverage Social Media and Influencer Marketing**: Building a strong personal brand or social media presence can open opportunities for sponsorships, partnerships, and other revenue streams.
-
-Whichever path you choose, ensure you research thoroughly, plan strategically, and manage risks effectively."""
+    "The 2021 Honda Civic is a reliable compact car 🚗 known for its fuel efficiency and practicality. It typically comes with a 2.0-liter four-cylinder engine or an optional 1.5-liter turbocharged engine, offering a good balance of power and efficiency.\n\nThe standard engine produces around 158 horsepower, while the turbocharged one boosts it up to 174 horsepower. The top speed of the Civic varies depending on the engine and trim level, but it generally ranges from 115 to 130 mph. The 0-60 mph acceleration time for the Civic is approximately 7-8 seconds, depending on the engine choice.\n\nInside, the Civic boasts a comfortable and well-equipped cabin with plenty of standard and available features. These include a user-friendly infotainment system with smartphone integration, advanced safety features like Honda Sensing, and a spacious interior with ample legroom and cargo space.\n\nOverall, the 2021 Honda Civic offers a blend of reliability, efficiency, and practicality that appeals to a wide range of drivers.",
+    "No problem! Here’s the information about the Mercedes CLR GTR:\nRUN AROUND 10-5 MILES\n\nThe Mercedes CLR GTR is a remarkable racing car celebrated for its outstanding performance and sleek design. Powered by a potent 6.0-liter V12 engine, it delivers over 600 horsepower.\n\nAcceleration from 0 to 100 km/h takes approximately 3.7 seconds, with a remarkable top speed surpassing 320 km/ h.\n\nIncorporating advanced aerodynamic features and cutting-edge stability technologies, the CLR GTR ensures exceptional stability and control, particularly during high-speed maneuvers.\n\nOriginally priced around $1.5 million, the Mercedes CLR GTR is considered one of the most exclusive and prestigious racing cars ever produced.",
+    "The Mercedes CLR GTR is a remarkable racing car celebrated for its outstanding performance and sleek design. Powered by a potent 6.0-liter V12 engine, it delivers over 600 horsepower.\n\nAcceleration from 0 to 100 km/h takes approximately 3.7 seconds, with a remarkable top speed surpassing 320 km/h.\n\nIncorporating advanced aerodynamic features and cutting-edge stability technologies, the CLR GTR ensures exceptional stability and control, particularly during high-speed maneuvers.\n\nOriginally priced around $1.5 million, the Mercedes CLR GTR is considered one of the most exclusive and prestigious racing cars ever produced.",
+    "Here's a classic chocolate chip cookie recipe:\n\nIngredients:\n- 1 cup (2 sticks) unsalted butter, softened\n- 3/4 cup granulated sugar\n- 3/4 cup packed brown sugar\n- 2 large eggs\n- 1 teaspoon vanilla extract\n- 2 1/4 cups all-purpose flour\n- 1 teaspoon baking soda\n- 1/2 teaspoon salt\n- 2 cups semisweet chocolate chips\n\nInstructions:\n1. Preheat your oven to 375°F (190°C). Line baking sheets with parchment paper.\n2. In a large mixing bowl, cream together the butter, granulated sugar, and brown sugar until light and fluffy.\n3. Beat in the eggs, one at a time, then stir in the vanilla extract.\n4. In a separate bowl, combine the flour, baking soda, and salt. Gradually add the dry ingredients to the wet ingredients and mix until well combined.\n5. Fold in the chocolate chips until evenly distributed throughout the dough.\n6. Drop rounded tablespoons of dough onto the prepared baking sheets, leaving space between each cookie.\n7. Bake in the preheated oven for 8 to 10 minutes, or until the edges are golden brown.\n8. Allow the cookies to cool on the baking sheets for a few minutes before transferring them to wire racks to cool completely.\n\nEnjoy your delicious homemade chocolate chip cookies!",
+    "No problem! Here's the information about the Mercedes CLR GTR:\n\nThe Mercedes CLR GTR is a remarkable racing car celebrated for its outstanding performance and sleek design. Powered by a potent 6.0-liter V12 engine, it delivers over 600 horsepower.\n\n🔧\n\nAcceleration from 0 to 100 km/h takes approximately 3.7 seconds, with a remarkable top speed surpassing 320 km/h.\n\nIncorporating advanced aerodynamic features and cutting-edge stability technologies, the CLR GTR ensures exceptional stability and control, particularly during high-speed maneuvers. 💨\n\nOriginally priced around $1.5 million, the Mercedes CLR GTR is considered one of the most exclusive and prestigious racing cars ever produced. 💰\n\nIts limited production run of just five units adds to its rarity, making it highly sought after by racing enthusiasts and collectors worldwide. 🌎\nWant to earn a million in 2024?\nDive into these 5 captivating remote business opportunities that promise excitement and potential:\n\nFreelancing & Consulting:\n\n• Dive into the world of Content Writing\n• Craft Compelling Copywriting\n• Unleash Creative Genius in Graphic Design\n• Build Memorable Brands with Branding Services\n\nE-commerce & Dropshipping:\n\n• Embark on the Adventure of Online Store Launching\n• Revolutionize Sales with Inventory-Free Dropshipping\n\nOnline Coaching & Courses:\n\n• Share Your Passion and Expertise through Online Coaching\n• Create Transformative Courses that Resonate with Audiences",
+    "The Mercedes CLR GTR is a remarkable racing car celebrated for its outstanding performance and sleek design. Powered by a potent 6.0-liter V12 engine, it delivers over 600 horsepower.\n\nAcceleration from 0 to 100 km/h takes approximately 3.7 seconds, with a remarkable top speed surpassing 320 km/h.\n\nIncorporating advanced aerodynamic features and cutting-edge stability technologies, the CLR GTR ensures exceptional stability and control, particularly during high-speed maneuvers.\n\nOriginally priced around $1.5 million, the Mercedes CLR GTR is considered one of the most exclusive and prestigious racing cars ever produced.\n\nIts limited production run of just five units adds to its rarity, making it highly sought after by racing enthusiasts and collectors worldwide.\nWant to earn a million in 2024?\nDive into these 5 captivating remote business opportunities that promise excitement and potential:\n\nFreelancing & Consulting:\n\n• Dive into the world of Content Writing\n• Craft Compelling Copywriting\n• Unleash Creative Genius in Graphic Design\n• Build Memorable Brands with Branding Services\n\nE-commerce & Dropshipping:\n\n• Embark on the Adventure of Online Store Launching\n• Revolutionize Sales with Inventory-Free Dropshipping\n\nOnline Coaching & Courses:\n\n• Share Your Passion and Expertise through Online Coaching\n• Create Transformative Courses that Resonate with Audiences",
+    "Earning a million dollars in 2024 is a challenging but achievable goal. Here are several strategies to consider:\n\n1. **Start a High-Growth Business**: Launching a tech startup or a business in a high-growth industry can offer significant returns if you can scale quickly and capture market share.\n\n2. **Invest in the Stock Market**: Strategic investing in stocks, particularly growth stocks or emerging industries, can yield substantial returns. Consider diversifying your portfolio and staying informed about market trends.\n\n3. **Real Estate Investments**: Investing in real estate properties, particularly in growing markets or through real estate investment trusts (REITs), can generate significant returns through appreciation and rental income.\n\n4. **Develop a Scalable Online Business**: Creating an online business, such as an e-commerce store, digital product, or subscription service, can reach a broad audience and scale quickly.\n\n5. **Cryptocurrency and Blockchain**: Investing in cryptocurrencies or blockchain projects can be highly profitable, though it comes with higher risk and volatility.\n\n6. **Innovate and Monetize Intellectual Property**: Developing a new product, technology, or content that can be patented or licensed could provide substantial revenue.\n\n7. **High-Income Careers**: Pursuing high-paying careers in finance, technology, or other lucrative fields, combined with strategic savings and investments, can accumulate wealth over time.\n\n8. **Leverage Social Media and Influencer Marketing**: Building a strong personal brand or social media presence can open opportunities for sponsorships, partnerships, and other revenue streams.\n\nWhichever path you choose, ensure you research thoroughly, plan strategically, and manage risks effectively.",
+    "Fun Fact: Honey never spoils. Archaeologists have found pots of honey in ancient Egyptian tombs that are over 3,000 years old and still perfectly edible. This is due to honey's low moisture content and acidic pH, which create an inhospitable environment for bacteria and microorganisms.",
+    "Fun Fact: Bananas are berries, but strawberries aren't. Botanically, a berry is a fruit produced from the ovary of a single flower with seeds embedded in the flesh. By this definition, bananas qualify as berries, while strawberries do not.",
+    "Fun Fact: Octopuses have three hearts. Two pump blood to the gills, while the third pumps it to the rest of the body. Additionally, their blood is blue due to a copper-based molecule called hemocyanin, which is more efficient at transporting oxygen in cold, low-oxygen environments.",
+    "Fun Fact: A day on Venus is longer than a year on Venus. Venus takes about 243 Earth days to rotate once on its axis, but only about 225 Earth days to complete one orbit around the Sun.",
+    "Fun Fact: The Eiffel Tower can be 15 cm taller during the summer. When a substance is heated up, its particles move more and it takes up a larger volume – this is known as thermal expansion. This effect causes the iron structure of the Eiffel Tower to expand in the heat of summer.",
+    "New Description: The 2022 Tesla Model S Plaid is an all-electric luxury sedan known for its incredible acceleration and cutting-edge technology. It features a tri-motor setup that produces over 1,000 horsepower, allowing it to accelerate from 0 to 60 mph in under 2 seconds. The Model S Plaid also boasts a top speed of 200 mph and a range of over 390 miles on a single charge. Inside, it offers a minimalist yet high-tech cabin with a large touchscreen display, advanced driver-assistance features, and premium materials throughout."
 ]
-
-
-# """
-# """,

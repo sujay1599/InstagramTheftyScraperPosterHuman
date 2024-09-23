@@ -1,16 +1,3 @@
-# Main function that handles scraping, uploading, and other bot tasks.
-
-#  This function contains the main loop of the bot, which scrapes reels from
-#  Instagram profiles, uploads them to TikTok, and performs human-like actions
-#  to mimic a real user. The function also handles rate limits and re-logins
-#  if needed, with exponential backoff.
-
-#  The function also displays a dashboard after each scraping and uploading
-#    phase, which shows the current status of the bot.
-
-#  Note: This function runs indefinitely until an error occurs or the user
-#  manually stops the program with Ctrl+C.
-
 import logging
 import os
 import random
@@ -104,38 +91,39 @@ def handle_rate_limit(client, func, *args, **kwargs):
     retries = 5
     for attempt in range(retries):
         try:
-            console.print(f"[bold blue]Attempting call {attempt+1}/{retries}[/bold blue]")
             return func(*args, **kwargs)
         except Exception as e:
-            console.print(f"[bold red]Error on attempt {attempt+1}/{retries}[/bold red]")
-            console.print(f"Error message: {e}")
             if '429' in str(e) or 'login_required' in str(e):  # Rate limit or login required error
                 sleep_time = min(2 ** attempt, 3000)  # Exponential backoff up to 5 minutes
                 console.print(f"Rate limit or login required. Retrying in {sleep_time} seconds...")
                 time_sleep(sleep_time)
-                console.print(f"[bold yellow]Re-logging in after attempt {attempt+1}[/bold yellow]")
                 relogin(client, INSTAGRAM_USERNAME, INSTAGRAM_PASSWORD, session_file)
             else:
                 logging.error(f"Error: {e}")
                 raise e
     raise Exception("Max retries exceeded")
 
+# Main loop
 def main():
     try:
         display_version_info()  # Display version control information
+
         # Load status
         status = read_status()
+
         # Set initial values for the main loop
         last_upload_time = status.get('last_upload_time', 0)
         last_scrape_time = status.get('last_scrape_time', 0)
         reels_scraped = set(status.get('reels_scraped', []))  # Use set to ensure uniqueness
+
         # Define tags from the configuration
         tags = config.get('custom_tags', [])
         default_comments = config.get('comments', [])
         default_descriptions = config.get('description', {}).get('custom_descriptions', [])
-        
+
         while True:
             current_time = time.time()
+
             # Check if it's time to scrape reels
             if current_time - last_scrape_time >= config['scraping']['scrape_interval_minutes'] * 60:
                 try:
@@ -143,15 +131,14 @@ def main():
                     uploaded_reels = load_uploaded_reels('upload_log.txt')
                     for profile in profiles:
                         try:
-                            # Scrape reels from the given profile
                             scraped_reels = handle_rate_limit(cl, scrape_reels, cl, profile, config['scraping']['num_reels'], last_scrape_time, uploaded_reels, list(reels_scraped), tags)
                             reels_scraped.update(scraped_reels)  # Update set with new scraped reels
-                            # Update status after scraping
                             update_status(last_scrape_time=current_time, reels_scraped=list(reels_scraped))  # Convert back to list for JSON
                             logging.info("Updated status after scraping")
                         except Exception as e:
                             logging.error(f"Error scraping profile {profile}: {e}")
                             console.print(f"[bold red]Error scraping profile {profile}: {e}[/bold red]")
+
                     console.print("[bold purple4]Finished scraping reels from profiles[/bold purple4]")
                     console.print("[bold purple4]Displaying dashboard before waiting phase[/bold purple4]")
                     subprocess.run(["python", "dashboard.py"])
@@ -162,21 +149,17 @@ def main():
             # Check if it's time to upload reels
             uploaded_reels = load_uploaded_reels('upload_log.txt')
             unuploaded_reels = get_unuploaded_reels('downloads', list(reels_scraped), uploaded_reels)
+
             if current_time - last_upload_time >= config['uploading']['upload_interval_minutes'] * 60:
                 try:
-                    # Check if there are any unuploaded reels
-                    if not unuploaded_reels:
-                        console.print("[bold yellow]No new reels to upload. Restarting scraping...[/bold yellow]")
-                        continue  # Restart the scraping process
-
-                    # Proceed to upload if there are unuploaded reels
                     handle_rate_limit(cl, upload_reels_with_new_descriptions, cl, config, unuploaded_reels, uploaded_reels, 'upload_log.txt', session_file)
-                    # Update status after uploading
                     update_status(last_upload_time=current_time)
                     console.print("[bold purple4]Finished uploading reels[/bold purple4]")
+
                     # Randomly perform human-like actions
                     if random.random() < 0.01:
                         perform_human_actions(cl, tags)
+
                     console.print("[bold purple4]Displaying dashboard before waiting phase[/bold purple4]")
                     subprocess.run(["python", "dashboard.py"])
                 except Exception as e:
