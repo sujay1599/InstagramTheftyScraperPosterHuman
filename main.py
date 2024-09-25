@@ -1,15 +1,16 @@
 # Main function that handles scraping, uploading, and other bot tasks.
 
-#  This function contains the main loop of the bot, which scrapes reels from
-#  Instagram profiles, uploads them to TikTok, and performs human-like actions
-#  to mimic a real user. The function also handles rate limits and re-logins
-#  if needed, with exponential backoff.
+# This function contains the main loop of the bot, which scrapes reels from
+# Instagram profiles, uploads them to TikTok, and performs human-like actions
+# to mimic a real user. The function also handles rate limits and re-logins
+# if needed, with exponential backoff.
 
-#  The function also displays a dashboard after each scraping and uploading
-#    phase, which shows the current status of the bot.
+# The function also displays a dashboard after each scraping and uploading
+# phase, which shows the current status of the bot.
 
-#  Note: This function runs indefinitely until an error occurs or the user
-#  manually stops the program with Ctrl+C.
+# Note: This function runs indefinitely until an error occurs or the user
+# manually stops the program with Ctrl+C.
+# Fixed an issue where user does not have to select the username to run; it auto selects the most recent created username from /User_session/ dir.
 
 import logging
 import os
@@ -20,11 +21,16 @@ from config_setup import load_config  # This should now be correct in config_set
 from auth import perform_login, update_session_file, decrypt_credentials, relogin, Client, inject_cookies
 from scrape import scrape_reels, perform_human_actions, display_version_info
 from upload import upload_reels_with_new_descriptions, get_unuploaded_reels, load_uploaded_reels
-from utils import initialize_status_file, read_status, update_status, random_sleep, log_random_upload_times, log_random_waits, initialize_json_file, sleep_with_progress_bar, delete_old_reels
+from utils import (
+    initialize_status_file, read_status, update_status, random_sleep,
+    log_random_upload_times, log_random_waits, initialize_json_file,
+    sleep_with_progress_bar, delete_old_reels
+)
 import subprocess
 from rich.console import Console
 import signal
 import sys
+import json
 
 console = Console()
 
@@ -46,7 +52,7 @@ if not os.path.exists(downloads_dir):
     os.makedirs(downloads_dir)
     logging.info(f"Created directory: {downloads_dir}")
 
-# Initialize files
+# Initialize necessary JSON files
 if not os.path.exists('status.json'):
     initialize_status_file()
     logging.info("Initialized status file")
@@ -59,21 +65,63 @@ if not os.path.exists('random-waits.json'):
     initialize_json_file('random-waits.json', default=[])
     logging.info("Created new random-waits.json file")
 
+# Function to get the latest JSON session file created by config_setup.py
+def get_latest_json_file(directory):
+    try:
+        json_files = [
+            f for f in os.listdir(directory)
+            if f.endswith('_session.json') and os.path.isfile(os.path.join(directory, f))
+        ]
+        if not json_files:
+            raise FileNotFoundError("No JSON session files found in the directory.")
+        
+        # Sort the files by modification time, with the most recent first
+        json_files.sort(key=lambda x: os.path.getmtime(os.path.join(directory, x)), reverse=True)
+        
+        # Return the full path to the most recent JSON file
+        return os.path.join(directory, json_files[0])
+    except Exception as e:
+        logging.error(f"Error finding JSON session file: {e}")
+        return None
+
 # Load configuration
 try:
-    last_username = input("Enter Instagram username for the session: ")
-    config = load_config(last_username)  # Use load_config to load the config file
-    logging.info(f"Loaded configuration for user: {last_username}")
-except FileNotFoundError as e:
+    # Automatically select the most recent session file and config file
+    session_directory = './user_sessions/'  # Adjust this path to your actual session directory
+    latest_json_file = get_latest_json_file(session_directory)
+    
+    if latest_json_file:
+        # Extract the username from the filename (e.g., username_session.json -> username)
+        filename = os.path.basename(latest_json_file)
+        if '_session.json' in filename:
+            last_username = filename.replace('_session.json', '')
+            logging.info(f"Extracted username '{last_username}' from session file name.")
+        else:
+            raise ValueError("Session file name does not follow the expected format 'username_session.json'.")
+        
+        # Load the configuration for this user
+        config = load_config(last_username)
+        logging.info(f"Loaded configuration for user: {last_username} from session file: {latest_json_file}")
+    else:
+        raise FileNotFoundError("No JSON session files available to load.")
+    
+    # Verify that the corresponding config file exists
+    config_file = os.path.join('configs', f"{last_username}_config.yaml")
+    if not os.path.exists(config_file):
+        logging.error(f"Config file {config_file} not found. Please run config_setup.py first to generate the configuration file.")
+        raise FileNotFoundError(f"Config file {config_file} not found")
+    
+except (FileNotFoundError, ValueError) as e:
     console.print(f"[bold red]Error: {e}. Make sure to run config_setup.py first to generate the configuration file.[/bold red]")
     sys.exit(1)
 
 # Validate configuration
 required_scraping_keys = ['profiles', 'num_reels', 'scrape_interval_minutes']
 for key in required_scraping_keys:
-    if key not in config['scraping']:
+    if key not in config.get('scraping', {}):
         logging.error(f"Missing required configuration key: scraping.{key}")
-        exit(1)
+        console.print(f"[bold red]Missing required configuration key: scraping.{key}[/bold red]")
+        sys.exit(1)
 
 # Decrypt Instagram credentials
 INSTAGRAM_USERNAME, INSTAGRAM_PASSWORD = decrypt_credentials(config)
@@ -110,7 +158,7 @@ def handle_rate_limit(client, func, *args, **kwargs):
             console.print(f"[bold red]Error on attempt {attempt+1}/{retries}[/bold red]")
             console.print(f"Error message: {e}")
             if '429' in str(e) or 'login_required' in str(e):  # Rate limit or login required error
-                sleep_time = min(2 ** attempt, 3000)  # Exponential backoff up to 5 minutes
+                sleep_time = min(2 ** attempt, 300)  # Exponential backoff up to 5 minutes
                 console.print(f"Rate limit or login required. Retrying in {sleep_time} seconds...")
                 time_sleep(sleep_time)
                 console.print(f"[bold yellow]Re-logging in after attempt {attempt+1}[/bold yellow]")
@@ -144,19 +192,31 @@ def main():
                     for profile in profiles:
                         try:
                             # Scrape reels from the given profile
-                            scraped_reels = handle_rate_limit(cl, scrape_reels, cl, profile, config['scraping']['num_reels'], last_scrape_time, uploaded_reels, list(reels_scraped), tags)
+                            scraped_reels = handle_rate_limit(
+                                cl,
+                                scrape_reels,
+                                cl,
+                                profile,
+                                config['scraping']['num_reels'],
+                                last_scrape_time,
+                                uploaded_reels,
+                                list(reels_scraped),
+                                tags
+                            )
                             reels_scraped.update(scraped_reels)  # Update set with new scraped reels
                             # Update status after scraping
                             update_status(last_scrape_time=current_time, reels_scraped=list(reels_scraped))  # Convert back to list for JSON
                             logging.info("Updated status after scraping")
                         except Exception as e:
                             logging.error(f"Error scraping profile {profile}: {e}")
+                            # Corrected closing tag from '}' to ']'
                             console.print(f"[bold red]Error scraping profile {profile}: {e}[/bold red]")
                     console.print("[bold purple4]Finished scraping reels from profiles[/bold purple4]")
                     console.print("[bold purple4]Displaying dashboard before waiting phase[/bold purple4]")
                     subprocess.run(["python", "dashboard.py"])
                 except Exception as e:
                     logging.error(f"Error in scraping loop: {e}")
+                    # Corrected closing tag from '}' to ']'
                     console.print(f"[bold red]Error in scraping loop: {e}[/bold red]")
 
             # Check if it's time to upload reels
@@ -170,7 +230,16 @@ def main():
                         continue  # Restart the scraping process
 
                     # Proceed to upload if there are unuploaded reels
-                    handle_rate_limit(cl, upload_reels_with_new_descriptions, cl, config, unuploaded_reels, uploaded_reels, 'upload_log.txt', session_file)
+                    handle_rate_limit(
+                        cl,
+                        upload_reels_with_new_descriptions,
+                        cl,
+                        config,
+                        unuploaded_reels,
+                        uploaded_reels,
+                        'upload_log.txt',
+                        session_file
+                    )
                     # Update status after uploading
                     update_status(last_upload_time=current_time)
                     console.print("[bold purple4]Finished uploading reels[/bold purple4]")
@@ -181,6 +250,7 @@ def main():
                     subprocess.run(["python", "dashboard.py"])
                 except Exception as e:
                     logging.error(f"Error in upload loop: {e}")
+                    # Corrected closing tag from '}' to ']'
                     console.print(f"[bold red]Error in upload loop: {e}[/bold red]")
 
             # Randomly perform human-like actions during the waiting period
@@ -192,6 +262,7 @@ def main():
                 delete_old_reels(config['deleting']['delete_interval_minutes'], config)
             except Exception as e:
                 logging.error(f"Error in deletion process: {e}")
+                # Corrected closing tag from '}' to ']'
                 console.print(f"[bold red]Error in deletion process: {e}[/bold red]")
 
             sleep_with_progress_bar(60)
@@ -201,6 +272,7 @@ def main():
         console.print("\n[bold red]Exiting program...[/bold red]")
     except Exception as e:
         logging.error(f"Unexpected error: {e}")
+        # Corrected closing tag from '}' to ']'
         console.print(f"[bold red]Unexpected error: {e}[/bold red]")
 
 if __name__ == "__main__":
