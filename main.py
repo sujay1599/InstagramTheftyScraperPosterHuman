@@ -10,7 +10,7 @@
 
 # Note: This function runs indefinitely until an error occurs or the user
 # manually stops the program with Ctrl+C.
-# Fixed an issue where user does not have to select the username to run; it auto selects the most recent created username from /User_session/ dir.
+#V3.2.2
 
 import logging
 import os
