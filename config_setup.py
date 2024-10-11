@@ -19,12 +19,19 @@ CONFIG_DIR = 'configs'
 KEY_FILE = 'key.key'  # Encryption key storage
 
 DEFAULT_TAGS = [
-    '1min', 'LongerVideos', 'swifttok', 'FallGuysMoments', 
-    'MakeupInspo', 'PaTiChallenge', 'ForYourPride', 'ohno', 
-    'anime', 'FilmTok', 'Fashionista', 'ShoppingTherapy', 
+    '1min', 'LongerVideos', 'swifttok', 'FallGuysMoments',
+    'MakeupInspo', 'PaTiChallenge', 'ForYourPride', 'ohno',
+    'anime', 'FilmTok', 'Fashionista', 'ShoppingTherapy',
     'BeautyDay', 'SportsPhotography', 'EntertainmentNews',
-    'GreenEnergy', 'EcoFriendly', 'MentalHealthMatters', 'DigitalArt', 'TravelGoals'
+    'GreenEnergy', 'EcoFriendly', 'MentalHealthMatters', 
+    'DigitalArt', 'TravelGoals', 'SeptemberVibes', 'SeptemberFeels',
+    'AutumnChuckles', 'SeptemberMemories', 'AutumnVibes', 'ComicalAutumn',
+    'FallFunnies', 'SeptemberGiggles', 'LaughingThroughFall', 'FallHumor',
+    'NYFW', 'BackInTheDay', 'DiaDeLosMuertos', 'WinterOutfit', 
+    'SummerOfGaming', 'Over50Fashion', 'SustainableBeauty', 'WeddingIdeas',
+    'Camping', 'SummerMakeup', 'Thrifting', 'VintageFashion'
 ]
+
 
 # Set up logging
 logging.basicConfig(
