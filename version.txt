@@ -1,6 +1,10 @@
 {
     "created_by": "Sujay1599",
     "program_name": "InstagramTheftyScraperPosterHuman",
-    "version": "3.2.1",
-    "working_as_of": "2024-09-22"
+    "version": "3.2.2",
+    "working_as_of": "2024-10-10",
+    "changes": [
+        "Fixed loop error during scraping phase",
+        "Improved error handling and graceful exit during scraping"
+    ]
 }
